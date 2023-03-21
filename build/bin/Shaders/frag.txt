@@ -1,0 +1,16 @@
+#version 460 core
+out vec4 FragColor;
+
+in vec3 ourPosition;
+in vec2 TexCoord;
+in vec2 faceTextCoord;
+
+uniform sampler2D ourTexture;
+uniform sampler2D textureFace;
+
+uniform float mixAmount;
+
+void main()
+{
+    FragColor = mix(texture(ourTexture, TexCoord), texture(textureFace, faceTextCoord), mixAmount);
+}
