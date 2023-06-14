@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Player.h"
+#include "Time.h"
 
 #include <iostream>
 #include <glad/glad.h>
@@ -34,7 +35,10 @@ int main(int, char**)
         return -1;
     }
 
-    glViewport(0, 0, 800, 600); 
+    glViewport(0, 0, 800, 600);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 
     std::vector<float> vertices = 
     {
@@ -68,13 +72,17 @@ int main(int, char**)
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //Get view/proj matrix
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, player.position);
+        //Process Input From Player
+        player.ProcessInputs(window, 0.01f);
 
+        //Get view/proj matrix for mesh drawing
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::rotate(view, -glm::radians(player.pitch), glm::vec3(1, 0, 0));
+        view = glm::rotate(view, glm::radians(player.yaw), glm::vec3(0, 1, 0));
+        view = glm::translate(view, player.position);
         glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(103.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-        
+        projection = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
         myMesh.position = glm::vec3(0.0, 0.0, 0.0f);
         myMesh.Draw(projection, view);
 
