@@ -9,7 +9,7 @@ Player::Player()
 
 void Player::ProcessInputs(GLFWwindow* window, GLfloat deltaTime)
 {
-    const float cameraSpeed = 0.5f;
+    const float cameraSpeed = 5;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         position += normalDirection * cameraSpeed * deltaTime;

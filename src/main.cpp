@@ -62,7 +62,6 @@ int main(int, char**)
     ImGui_ImplOpenGL3_Init("#version 460");
     
     Shader myShader = Shader("Shaders/vertex.txt", "Shaders/fragment.txt");
-    Mesh myMesh = Mesh(vertices, indices, &myShader);
     
     Player player = Player();
     player.position = glm::vec3(0.0, 0.0, -5.0f);
@@ -82,9 +81,6 @@ int main(int, char**)
         view = glm::translate(view, player.position);
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
-        myMesh.position = glm::vec3(0.0, 0.0, 0.0f);
-        myMesh.Draw(projection, view);
 
         glfwSwapBuffers(window);
         glfwPollEvents();    

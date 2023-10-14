@@ -6,17 +6,32 @@
 
 #include "Player.h"
 
+struct Vertex
+{
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec3 texCoords;
+};
+
+struct Texture
+{
+    unsigned int id;
+    std::string type;
+};
+
 class Mesh
 {
 public:
-    Mesh(std::vector<float> vertexData, std::vector<unsigned int> indiceData, Shader* objShader);
-    void Draw(glm::mat4 projection, glm::mat4 view);
+    std::vector<Vertex> verticies;
+    std::vector<unsigned int> indices;
+    std::vector<Texture> textures;
 
-    glm::vec3 position = glm::vec3(0.0f);
+    Mesh(std::vector<Vertex> _verticies, std::vector<unsigned int> _indices, std::vector<Texture> _textures);
+    void Draw(Shader &Shader);
 
+private:
     unsigned int VAO, VBO, EBO;
-    unsigned int numVertices;
-    Shader* shader;
+    void SetupMesh();
 };
 
 #endif
