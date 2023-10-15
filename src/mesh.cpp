@@ -62,13 +62,13 @@ void Mesh::Draw(Shader &shader)
             number = std::to_string(specularNr++);
 
         shader.setInt(("materials."+ name + number).c_str(), i);
-        glBindTexture(GL_TEXTURE_2D, texures[i].id);
+        glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
     glActiveTexture(GL_TEXTURE0);
 
     //Draw
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GLUNSGINED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
