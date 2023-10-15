@@ -3,72 +3,50 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-Mesh::Mesh(std::vector<Vertex> _verticies, std::vector<unsigned int> _indices, std::vector<Texture> _textures)
+Mesh::Mesh(std::vector<float> vertexData, std::vector<unsigned int> indiceData, Shader* objShader)
 {
-    this->verticies = _verticies;
-    this->indices = _indices;
-    this->textures = _textures;
-
-    SetupMesh();
-}
-
-void Mesh::SetupMesh()
-{
+    //Generate VAO, VBO and EBO and fill with data
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
 
-    //Bind VAO
     glBindVertexArray(VAO);
 
-    //Configure VBO
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, verticies.size() * sizeof(Vertex),
-     &verticies[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), &vertexData[0], GL_STATIC_DRAW);
 
-    //Configure EBO
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
-    &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indiceData.size() * sizeof(unsigned int), &indiceData[0], GL_STATIC_DRAW);
 
-    //vertex positions
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    
+    //Calculate number of triangles
+    numVertices = indiceData.size();
 
-    //vertex Normals
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-
-    glEnableVertexAttribArray(2);    
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-    glBindVertexArray(0);
+    //Assign Shader
+    shader = objShader;
 }
 
-void Mesh::Draw(Shader &shader)
-{
-    unsigned int diffuseNr = 1;
-    unsigned int specularNr = 1;
+void Mesh::Draw(glm::mat4 projection, glm::mat4 view, bool indices)
+{   
+    shader->use();
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, position);
+    model= glm::scale(model, scale);
 
-    for (unsigned int i = 0; i < textures.size(); i++)
-    {
-        glActiveTexture(GL_TEXTURE0 + i);
-        std::string number;
-        std::string name = textures[i].type;
+    int modelLoc = glGetUniformLocation(shader->ID, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        if(name == "texture_diffuse")
-            number = std::to_string(diffuseNr++);
-        else if(name == "texture_specular")
-            number = std::to_string(specularNr++);
+    int viewLoc = glGetUniformLocation(shader->ID, "view");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-        shader.setInt(("materials."+ name + number).c_str(), i);
-        glBindTexture(GL_TEXTURE_2D, textures[i].id);
-    }
-    glActiveTexture(GL_TEXTURE0);
+    int projLoc = glGetUniformLocation(shader->ID, "projection");
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-    //Draw
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    glBindVertexArray(VAO); 
+    if(indices)
+        glDrawElements(GL_TRIANGLES, 128, GL_UNSIGNED_INT, 0);
+        else
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 }
-

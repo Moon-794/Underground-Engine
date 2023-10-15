@@ -39,13 +39,57 @@ int main(int, char**)
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-
     std::vector<float> vertices = 
     {
         0.5f,  0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
         -0.5f, -0.5f, 0.0f,
-        -0.5f,  0.5f, 0.0f
+        -0.5f,  0.5f, 0.0f,
+    };
+    
+    std::vector<float> lightVertices
+    {
+        -0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+
+    -0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
+
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f, -0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+
+    -0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f, -0.5f,
+     0.5f, -0.5f,  0.5f,
+     0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f,  0.5f,
+    -0.5f, -0.5f, -0.5f,
+
+    -0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f, -0.5f,
+     0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f,  0.5f,
+    -0.5f,  0.5f, -0.5f
     };
 
     std::vector<unsigned int> indices = 
@@ -62,14 +106,26 @@ int main(int, char**)
     ImGui_ImplOpenGL3_Init("#version 460");
     
     Shader myShader = Shader("Shaders/vertex.txt", "Shaders/fragment.txt");
+    Shader lightingShader = Shader("Shaders/vertexLighting.txt", "Shaders/fragLighting.txt");
+    Mesh myMesh = Mesh(lightVertices, indices, &myShader);
+    Mesh lightMesh = Mesh(lightVertices, indices, &lightingShader);
     
     Player player = Player();
     player.position = glm::vec3(0.0, 0.0, -5.0f);
 
+    unsigned int lightVAO;
+    glBindVertexArray(lightVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, myMesh.VBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myMesh.EBO);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glEnable(GL_DEPTH_TEST);
     while(!glfwWindowShouldClose(window))
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //Process Input From Player
         player.ProcessInputs(window, 0.01f);
@@ -81,6 +137,16 @@ int main(int, char**)
         view = glm::translate(view, player.position);
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+        myShader.use();
+        myShader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+        myShader.setVec3("lightColor", glm::vec3(0.3f, 0.3f, .3f));
+        myMesh.position = glm::vec3(0.0, 0.0, 0.0f);
+        myMesh.Draw(projection, view, false);
+
+        lightMesh.position = glm::vec3(1.0f, 1.0f, 1.0f);
+        lightMesh.scale = glm::vec3(0.5f, 0.5f, 0.5f);
+        lightMesh.Draw(projection, view, false);
 
         glfwSwapBuffers(window);
         glfwPollEvents();    
