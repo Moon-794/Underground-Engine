@@ -145,10 +145,14 @@ int main(int, char**)
     Shader myShader = Shader("Shaders/vertex.txt", "Shaders/fragment.txt");
     Shader lightingShader = Shader("Shaders/vertexLighting.txt", "Shaders/fragLighting.txt");
     Mesh myMesh = Mesh(vertices, indices, &myShader);
+    myMesh.position = glm::vec3(0.0, 0.0, 0.0f);
+
     Mesh lightMesh = Mesh(vertices, indices, &lightingShader);
+    lightMesh.position = glm::vec3(1.0f, 1.0f, 1.0f);
+    lightMesh.scale = glm::vec3(0.5f, 0.5f, 0.5f);
     
     Player player = Player();
-    player.position = glm::vec3(0.0, 0.0, -5.0f);
+    player.position = glm::vec3(0.0, -1.0, -5.0f);
 
     unsigned int lightVAO;
     glBindVertexArray(lightVAO);
@@ -176,14 +180,12 @@ int main(int, char**)
         projection = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
         myShader.use();
-        myShader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
-        myShader.setVec3("lightColor", glm::vec3(0.3f, 0.3f, .3f));
+        myShader.setVec3("objectColor", glm::vec3(0.3f, 0.8f, 0.4f));
+        myShader.setVec3("lightColor", glm::vec3(0.4f, 0.4f, 0.4f));
         myShader.setVec3("lightPos", lightMesh.position);
-        myMesh.position = glm::vec3(0.0, 0.0, 0.0f);
+        myShader.setVec3("viewPos", player.position);
         myMesh.Draw(projection, view, false);
 
-        lightMesh.position = glm::vec3(1.0f, 1.0f, 1.0f);
-        lightMesh.scale = glm::vec3(0.5f, 0.5f, 0.5f);
         lightMesh.Draw(projection, view, false);
 
         glfwSwapBuffers(window);
