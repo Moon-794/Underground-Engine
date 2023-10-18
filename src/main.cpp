@@ -184,6 +184,13 @@ int main(int, char**)
         myShader.setVec3("lightColor", glm::vec3(0.4f, 0.4f, 0.4f));
         myShader.setVec3("lightPos", lightMesh.position);
         myShader.setVec3("viewPos", player.position);
+
+        myShader.setVec3("light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f));
+
+        myShader.setVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+        myShader.setVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+        myShader.setVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+        myShader.setFloat("material.shininess", 32.0f);
         myMesh.Draw(projection, view, false);
 
         lightMesh.Draw(projection, view, false);
