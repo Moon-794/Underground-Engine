@@ -30,8 +30,3 @@ Texture::Texture(std::string path)
     }
     stbi_image_free(data);
 }
-
-void Texture::Use()
-{
-    glBindTexture(GL_TEXTURE_2D, this->ID);
-}

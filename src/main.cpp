@@ -114,6 +114,7 @@ int main(int, char**)
     player.position = glm::vec3(0.0, -1.0, -5.0f);
 
     Texture texture = Texture("Textures/container2.png");
+    Texture textureSpecular = Texture("Textures/container2_specular.png");
 
     unsigned int lightVAO;
     glBindVertexArray(lightVAO);
@@ -151,10 +152,16 @@ int main(int, char**)
         myShader.setVec3("light.specular",  glm::vec3(1.0f, 1.0f, 1.0f));
 
         myShader.setInt("material.diffuse", 0);
+        myShader.setInt("material.specular", 1);
         myShader.setVec3("material.specular", glm::vec3(0.50196078f, 0.50196078f, 0.50196078f));
         myShader.setFloat("material.shininess", 32.0f);
         
-        texture.Use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture.ID); 
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textureSpecular.ID); 
+
         myMesh.Draw(projection, view, false);
 
         lightMesh.Draw(projection, view, false);
