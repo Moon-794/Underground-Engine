@@ -51,6 +51,4 @@ void Player::ProcessMouseMovements(GLFWwindow* window)
     normalDirection.x = -(sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
     normalDirection = glm::normalize(normalDirection);
     normalDirection.y = 0;
-
-    std::cout << normalDirection.x << " " << normalDirection.y << " " << normalDirection.z << "\n";
 }
