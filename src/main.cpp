@@ -105,6 +105,7 @@ int main(int, char**)
     Shader lightingShader = Shader("Shaders/vertexLighting.txt", "Shaders/fragLighting.txt");
     Mesh myMesh = Mesh(vertices, indices, &myShader);
     myMesh.position = glm::vec3(0.0, 0.0, 0.0f);
+    myMesh.scale = glm::vec3(5, 0.1f, 5);
 
     Mesh lightMesh = Mesh(vertices, indices, &lightingShader);
     lightMesh.position = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -147,6 +148,8 @@ int main(int, char**)
         myShader.setVec3("lightPos", lightMesh.position);
         myShader.setVec3("viewPos", player.position);
 
+        myShader.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+        myShader.setVec3("hahaLightDir", glm::vec4(-0.2f, -1.0f, -0.3f, 0.0f));
         myShader.setVec3("light.ambient",  glm::vec3(0.3f, 0.3f, 0.3f));
         myShader.setVec3("light.diffuse",  glm::vec3(0.8f, 0.8f, 0.8f));
         myShader.setVec3("light.specular",  glm::vec3(1.0f, 1.0f, 1.0f));
