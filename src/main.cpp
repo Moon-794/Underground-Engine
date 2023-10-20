@@ -149,7 +149,6 @@ int main(int, char**)
         myShader.setVec3("viewPos", player.position);
 
         myShader.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
-        myShader.setVec3("hahaLightDir", glm::vec4(-0.2f, -1.0f, -0.3f, 0.0f));
         myShader.setVec3("light.ambient",  glm::vec3(0.3f, 0.3f, 0.3f));
         myShader.setVec3("light.diffuse",  glm::vec3(0.8f, 0.8f, 0.8f));
         myShader.setVec3("light.specular",  glm::vec3(1.0f, 1.0f, 1.0f));
