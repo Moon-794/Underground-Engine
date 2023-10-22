@@ -148,10 +148,15 @@ int main(int, char**)
         myShader.setVec3("lightPos", lightMesh.position);
         myShader.setVec3("viewPos", player.position);
 
+        myShader.setVec3("light.position", lightMesh.position);
         myShader.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
         myShader.setVec3("light.ambient",  glm::vec3(0.3f, 0.3f, 0.3f));
         myShader.setVec3("light.diffuse",  glm::vec3(0.8f, 0.8f, 0.8f));
         myShader.setVec3("light.specular",  glm::vec3(1.0f, 1.0f, 1.0f));
+
+        myShader.setVec3("light.constant", 1.0f);
+        myShader.setVec3("light.linear",  0.09f);
+        myShader.setVec3("light.quadratic",  0.032f);
 
         myShader.setInt("material.diffuse", 0);
         myShader.setInt("material.specular", 1);
