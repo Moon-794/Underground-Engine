@@ -94,6 +94,13 @@ int main(int, char**)
         1, 2, 3
     };
 
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3( 0.7f,  1.0f,  2.0f),
+        glm::vec3( 2.3f, 1.5f, -4.0f),
+        glm::vec3(-4.0f,  2.0f, -12.0f),
+        glm::vec3( 0.0f,  0.0f, -3.0f)
+    };
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -102,10 +109,14 @@ int main(int, char**)
     ImGui_ImplOpenGL3_Init("#version 460");
     
     Shader myShader = Shader("Shaders/vertex.vs", "Shaders/fragment.fs");
+    myShader.use();
+    myShader.setInt("material.diffuse", 0);
+    myShader.setInt("material.specular", 1);
+
     Shader lightingShader = Shader("Shaders/vertexLighting.vs", "Shaders/fragLighting.fs");
     Mesh myMesh = Mesh(vertices, indices, &myShader);
     myMesh.position = glm::vec3(0.0, 0.0, 0.0f);
-    myMesh.scale = glm::vec3(5, 0.1f, 5);
+    myMesh.scale = glm::vec3(25, 0.1f, 25);
 
     Mesh lightMesh = Mesh(vertices, indices, &lightingShader);
     lightMesh.position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -149,22 +160,33 @@ int main(int, char**)
 
         myShader.use();
         myShader.setVec3("viewPos", -player.position);
-        myShader.setVec3("light.position", -player.position);
-        myShader.setVec3("light.direction",  cameraFront);
-        myShader.setFloat("light.cutOff", glm::cos(glm::radians(15.0f)));
-        myShader.setVec3("light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f));
-        myShader.setVec3("light.diffuse",  glm::vec3(0.7f, 0.7f, 0.5f));
-        myShader.setVec3("light.specular",  glm::vec3(1.0f, 1.0f, 1.0f));
-        
-        //myShader.setFloat("light.cutOff",glm::cos(glm::radians(12.5f)));
-        myShader.setFloat("light.constant", 1.0f);
-        myShader.setFloat("light.linear",  0.03f);
-        myShader.setFloat("light.quadratic",  0.015f);
-
-        myShader.setInt("material.diffuse", 0);
-        myShader.setInt("material.specular", 1);
-        myShader.setVec3("material.specular", glm::vec3(0.50196078f, 0.50196078f, 0.50196078f));
         myShader.setFloat("material.shininess", 32.0f);
+        
+        myShader.setVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+        myShader.setVec3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+        myShader.setVec3("dirLight.diffuse", glm::vec3(0.2f, 0.2f, 0.2f));
+        myShader.setVec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+            
+        int numLights = 4;
+        myShader.setFloat("numLights", numLights);
+        for (unsigned int i = 0; i < numLights; i++)
+        {
+            std::string elementName = "pointLights[" + std::to_string(i) + "].position";
+            myShader.setVec3(elementName, pointLightPositions[i]);
+
+            elementName = "pointLights[" + std::to_string(i) + "].ambient";
+            myShader.setVec3(elementName, glm::vec3(0.05f, 0.05f, 0.05f));
+            elementName = "pointLights[" + std::to_string(i) + "].diffuse";
+            myShader.setVec3(elementName, glm::vec3(0.8f, 0.8f, 0.8f));
+            elementName = "pointLights[" + std::to_string(i) + "].specular";
+            myShader.setVec3(elementName, glm::vec3(1.0f, 1.0f, 1.0f));
+            elementName = "pointLights[" + std::to_string(i) + "].constant";
+            myShader.setFloat(elementName, 1.0f);
+            elementName = "pointLights[" + std::to_string(i) + "].linear";
+            myShader.setFloat(elementName, 0.09f);
+            elementName = "pointLights[" + std::to_string(i) + "].quadratic";
+            myShader.setFloat(elementName, 0.032f);
+        }
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.ID); 
