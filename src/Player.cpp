@@ -7,7 +7,7 @@ Player::Player()
     position = glm::vec3(0.0f);
 }
 
-void Player::ProcessInputs(GLFWwindow* window, GLfloat deltaTime)
+void Player::ProcessInputs(GLFWwindow* window, GLfloat deltaTime, bool cursorActive)
 {
     const float cameraSpeed = 5;
 
@@ -21,7 +21,8 @@ void Player::ProcessInputs(GLFWwindow* window, GLfloat deltaTime)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         position += glm::cross(normalDirection, glm::vec3(0.0, 1.0, 0.0)) * cameraSpeed * deltaTime;
 
-    ProcessMouseMovements(window);
+    if(cursorActive)
+        ProcessMouseMovements(window);
 }
 
 void Player::ProcessMouseMovements(GLFWwindow* window)

@@ -1,18 +1,21 @@
-
-
 #include "IMGUI/imgui.h"
 #include "IMGUI/imgui_impl_glfw.h"
 #include "IMGUI/imgui_impl_opengl3.h"
 
 #include "Shader.h"
-#include "Mesh.h"
+#include "Model.h"
 #include "Player.h"
 #include "Time.h"
-#include "Texture.h"
 
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <filesystem>
+
+bool cursorActive = false;
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main(int, char**) 
 {
@@ -22,7 +25,7 @@ int main(int, char**)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "The Underground", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "The Underground", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -38,69 +41,11 @@ int main(int, char**)
         return -1;
     }
 
-    glViewport(0, 0, 800, 600);
-
+    glViewport(0, 0, 1280, 720);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetKeyCallback(window, key_callback);
 
-    std::vector<float> vertices = 
-    {
-    // positions          // normals           // texture coords
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
-
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
-    };
-
-    std::vector<unsigned int> indices = 
-    {
-        0, 1, 3,
-        1, 2, 3
-    };
-
-    glm::vec3 pointLightPositions[] = {
-        glm::vec3( 0.7f,  1.0f,  2.0f),
-        glm::vec3( 2.3f, 1.5f, -4.0f),
-        glm::vec3(-4.0f,  2.0f, -12.0f),
-        glm::vec3( 0.0f,  0.0f, -3.0f)
-    };
-
+    //IMGUI
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -108,95 +53,55 @@ int main(int, char**)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
     
-    Shader myShader = Shader("Shaders/vertex.vs", "Shaders/fragment.fs");
-    myShader.use();
-    myShader.setInt("material.diffuse", 0);
-    myShader.setInt("material.specular", 1);
-
-    Shader lightingShader = Shader("Shaders/vertexLighting.vs", "Shaders/fragLighting.fs");
-    Mesh myMesh = Mesh(vertices, indices, &myShader);
-    myMesh.position = glm::vec3(0.0, 0.0, 0.0f);
-    myMesh.scale = glm::vec3(25, 0.1f, 25);
-
-    Mesh lightMesh = Mesh(vertices, indices, &lightingShader);
-    lightMesh.position = glm::vec3(0.0f, 0.0f, 0.0f);
-    lightMesh.scale = glm::vec3(0.5f, 0.5f, 0.5f);
-    
     Player player = Player();
-    player.position = glm::vec3(0.0, -1.0, 0.0f);
+    player.position = glm::vec3(0.0f, -2.0f, 0.0f);
 
-    Texture texture = Texture("Textures/container2.png");
-    Texture textureSpecular = Texture("Textures/container2_specular.png");
-
-    unsigned int lightVAO;
-    glBindVertexArray(lightVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, myMesh.VBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myMesh.EBO);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    Shader mapShader = Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
+    Model map = Model("Models/map.obj");
+    Model bong = Model("Models/weed.obj");
 
     glEnable(GL_DEPTH_TEST);
     while(!glfwWindowShouldClose(window))
     {
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //Process Input From Player
-        player.ProcessInputs(window, 0.01f);
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
+        //Process Input From Player
+        player.ProcessInputs(window, 0.01f, cursorActive);
+
+        mapShader.use();
         //Get view/proj matrix for mesh drawing
         glm::mat4 view = glm::mat4(1.0f);
         view = glm::rotate(view, -glm::radians(player.pitch), glm::vec3(1, 0, 0));
         view = glm::rotate(view, glm::radians(player.yaw), glm::vec3(0, 1, 0));
         view = glm::translate(view, player.position);
+
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        mapShader.setMat4("projection", projection);
+        mapShader.setMat4("view", view);
 
-        glm::vec3 cameraFront = glm::vec3(1);
-        cameraFront.z = cos(glm::radians(player.yaw)) * cos(glm::radians(player.pitch));
-        cameraFront.x = -(sin(glm::radians(player.yaw)) * cos(glm::radians(player.pitch)));
-        cameraFront.y = sin(-glm::radians(player.pitch));
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        mapShader.setMat4("model", model);
+        map.Draw(mapShader);
 
-        myShader.use();
-        myShader.setVec3("viewPos", -player.position);
-        myShader.setFloat("material.shininess", 32.0f);
-        
-        myShader.setVec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
-        myShader.setVec3("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-        myShader.setVec3("dirLight.diffuse", glm::vec3(0.2f, 0.2f, 0.2f));
-        myShader.setVec3("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-            
-        int numLights = 4;
-        myShader.setFloat("numLights", numLights);
-        for (unsigned int i = 0; i < numLights; i++)
-        {
-            std::string elementName = "pointLights[" + std::to_string(i) + "].position";
-            myShader.setVec3(elementName, pointLightPositions[i]);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(4, 0.7f, 4));
+        model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+        mapShader.setMat4("model", model);
+        bong.Draw(mapShader);
 
-            elementName = "pointLights[" + std::to_string(i) + "].ambient";
-            myShader.setVec3(elementName, glm::vec3(0.05f, 0.05f, 0.05f));
-            elementName = "pointLights[" + std::to_string(i) + "].diffuse";
-            myShader.setVec3(elementName, glm::vec3(0.8f, 0.8f, 0.8f));
-            elementName = "pointLights[" + std::to_string(i) + "].specular";
-            myShader.setVec3(elementName, glm::vec3(1.0f, 1.0f, 1.0f));
-            elementName = "pointLights[" + std::to_string(i) + "].constant";
-            myShader.setFloat(elementName, 1.0f);
-            elementName = "pointLights[" + std::to_string(i) + "].linear";
-            myShader.setFloat(elementName, 0.09f);
-            elementName = "pointLights[" + std::to_string(i) + "].quadratic";
-            myShader.setFloat(elementName, 0.032f);
-        }
-        
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture.ID); 
+        ImGui::Begin("Editor");
+        ImGui::Text("This is a window!");
+        ImGui::End();
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, textureSpecular.ID); 
-
-        myMesh.Draw(projection, view, false);
-
-        //lightMesh.Draw(projection, view, false);
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
         glfwPollEvents();    
@@ -210,4 +115,14 @@ int main(int, char**)
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
+}
+
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_F12 && action == GLFW_PRESS)
+    {
+        cursorActive = !cursorActive;
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (cursorActive * 2));
+    }
 }
