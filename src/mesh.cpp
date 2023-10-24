@@ -3,56 +3,68 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-Mesh::Mesh(std::vector<float> vertexData, std::vector<unsigned int> indiceData, Shader* objShader)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
 {
-    //Generate VAO, VBO and EBO and fill with data
+    this->vertices = vertices;
+    this->indices = indices;
+    this->textures = textures;
+
+    SetupMesh();
+}
+
+void Mesh::SetupMesh()
+{
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
-
+  
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), &vertexData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);  
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indiceData.size() * sizeof(unsigned int), &indiceData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    // vertex positions
+    glEnableVertexAttribArray(0);	
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    // vertex normals
+    glEnableVertexAttribArray(1);	
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+    // vertex texture coords
+    glEnableVertexAttribArray(2);	
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(int), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    
-    //Calculate number of triangles
-    numVertices = indiceData.size();
-
-    //Assign Shader
-    shader = objShader;
+    glBindVertexArray(0);
 }
 
-void Mesh::Draw(glm::mat4 projection, glm::mat4 view, bool indices)
+void Mesh::Draw(Shader &shader)
 {   
-    shader->use();
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, position);
-    model= glm::scale(model, scale);
+    unsigned int diffuseNr = 1;
+    unsigned int specularNr = 1;
+    for (unsigned int i = 0; i < textures.size(); i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + i);
 
-    int modelLoc = glGetUniformLocation(shader->ID, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        std::string number;
+        std::string name = textures[i].type;
 
-    int viewLoc = glGetUniformLocation(shader->ID, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        //TODO: Optimise with maps for O(1)
+        if(name == "texture_diffuse")
+            number = std::to_string(diffuseNr++);
+        else if(name == "texture_specular")
+            number = std::to_string(specularNr++);
 
-    int projLoc = glGetUniformLocation(shader->ID, "projection");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
+        glBindTexture(GL_TEXTURE_2D, textures[i].id);
+    }
 
-    glBindVertexArray(VAO); 
-    if(indices)
-        glDrawElements(GL_TRIANGLES, 128, GL_UNSIGNED_INT, 0);
-        else
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //Draw
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+    //Return to defaults
+    glActiveTexture(GL_TEXTURE0);
 }
