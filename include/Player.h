@@ -17,7 +17,7 @@ public:
 
     Player();
     float yaw, pitch = 0;
-    void ProcessInputs(GLFWwindow* window, GLfloat deltaTime);
+    void ProcessInputs(GLFWwindow* window, GLfloat deltaTime, bool cursorActive);
 private:
     float lastX = 400, lastY = 300;
 
