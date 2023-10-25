@@ -81,7 +81,7 @@ int main(int, char**)
         view = glm::translate(view, player.position);
 
         glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
         mapShader.setMat4("projection", projection);
         mapShader.setMat4("view", view);
 
