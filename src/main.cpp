@@ -6,6 +6,7 @@
 #include "Model.h"
 #include "Player.h"
 #include "Time.h"
+#include "Scene.h"
 
 #include <iostream>
 #include <glad/glad.h>
@@ -72,17 +73,11 @@ int main(int, char**)
 
     float deltaTime = 0.0f;
 
+    GameObject gameobj = GameObject();
+    gameobj.addComponent<Component>();
+
     std::chrono::high_resolution_clock timer;
     using ms = std::chrono::duration<float, std::milli>;
-
-    std::vector<float> debugPoints = 
-    {
-        0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f
-    };
-
-    unsigned int VAO;
-
     glEnable(GL_DEPTH_TEST);
     while(!glfwWindowShouldClose(window))
     {

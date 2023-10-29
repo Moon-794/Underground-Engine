@@ -13,7 +13,7 @@ find_package(assimp REQUIRED)
 
 add_executable(Test src/main.cpp src/glad.c 
 src/ImGUI/imgui_demo.cpp src/ImGUI/imgui_draw.cpp src/ImGUI/imgui_impl_glfw.cpp src/ImGUI/imgui_impl_opengl3.cpp src/ImGUI/imgui_tables.cpp src/ImGUI/imgui_widgets.cpp src/ImGUI/imgui.cpp
-src/mesh.cpp src/Player.cpp src/model.cpp)
+src/mesh.cpp src/Player.cpp src/model.cpp src/ECS/scene.cpp src/ECS/gameObject.cpp src/ECS/component.cpp)
 
 target_link_libraries(Test libglfw3dll.a assimp::assimp)
 
