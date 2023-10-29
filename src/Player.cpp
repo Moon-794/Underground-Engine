@@ -10,18 +10,26 @@ Player::Player()
 void Player::ProcessInputs(GLFWwindow* window, GLfloat deltaTime, bool cursorActive)
 {
     const float cameraSpeed = 5;
+    glm::vec3 moveDir = glm::vec3(0.0f);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        position += normalDirection * cameraSpeed * deltaTime;
+        moveDir += normalDirection;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        position -= normalDirection* cameraSpeed * deltaTime;
+        moveDir -= normalDirection;
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        position -= glm::cross(normalDirection, glm::vec3(0.0, 1.0, 0.0)) * cameraSpeed * deltaTime;
+        moveDir -= glm::cross(normalDirection, glm::vec3(0.0, 1.0, 0.0));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        position += glm::cross(normalDirection, glm::vec3(0.0, 1.0, 0.0)) * cameraSpeed * deltaTime;
+        moveDir += glm::cross(normalDirection, glm::vec3(0.0, 1.0, 0.0));
 
-    if(cursorActive)
+    if(glm::length(moveDir) > 1.0f)
+        moveDir = glm::normalize(moveDir);
+    
+    position += moveDir * cameraSpeed * deltaTime;
+
+    
+
+    if(!cursorActive)
         ProcessMouseMovements(window);
 }
 

@@ -75,6 +75,14 @@ int main(int, char**)
     std::chrono::high_resolution_clock timer;
     using ms = std::chrono::duration<float, std::milli>;
 
+    std::vector<float> debugPoints = 
+    {
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f
+    };
+
+    unsigned int VAO;
+
     glEnable(GL_DEPTH_TEST);
     while(!glfwWindowShouldClose(window))
     {
