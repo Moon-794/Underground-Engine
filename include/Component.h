@@ -9,6 +9,7 @@ class Component
 {
 public:
     Component();
+    ~Component();
     void Update();
 
     GameObject* parent;

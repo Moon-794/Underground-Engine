@@ -74,7 +74,7 @@ int main(int, char**)
     float deltaTime = 0.0f;
 
     GameObject gameobj = GameObject();
-    gameobj.addComponent<Component>();
+    Component* genericComponent = gameobj.addComponent<Component>();
 
     std::chrono::high_resolution_clock timer;
     using ms = std::chrono::duration<float, std::milli>;

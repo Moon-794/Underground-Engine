@@ -12,10 +12,13 @@ public:
     std::vector<Component*> components;
     
     template<typename T>
-    void addComponent()
+    T* addComponent()
     {
-        T component = T();
-        components.push_back(&component);
+        T* component = new T();
+        component->parent = this;
+        components.push_back(component);
+
+        return component;
     }
 };
 
