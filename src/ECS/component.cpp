@@ -9,8 +9,3 @@ Component::~Component()
 {
     std::cout << "Component destroyed" << "\n";
 }
-
-void Component::Update()
-{
-    
-}

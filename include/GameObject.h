@@ -19,8 +19,9 @@ public:
 
     //Arbitrary Object Data
     std::string name;
+    std::vector<std::shared_ptr<Component>> components;
 
-    //Template for adding components, returns a pointer o
+    //Template for adding components, returns a pointer
     template<typename T>
     std::unique_ptr<T> addComponent()
     {
@@ -33,7 +34,6 @@ public:
 private:
     Scene* gameScene;
     GameObject* parent = nullptr;
-    std::vector<std::unique_ptr<Component>> components;
 };
 
 #include "Scene.h"

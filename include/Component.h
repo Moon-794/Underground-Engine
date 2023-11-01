@@ -10,7 +10,9 @@ class Component
 public:
     Component();
     ~Component();
-    void Update();
+
+    virtual void Start() = 0;
+    virtual void Update() = 0;
 
     GameObject* parent;
 };

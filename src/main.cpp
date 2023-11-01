@@ -8,6 +8,8 @@
 #include "Time.h"
 #include "Scene.h"
 
+#include "Components/MeshRenderer.h"
+
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -77,8 +79,8 @@ int main(int, char**)
     Scene* scene = new Scene();
     GameObject gameobj = GameObject(scene, "Basic Object");
 
-    std::unique_ptr<Component> com = gameobj.addComponent<Component>();
-
+    gameobj.addComponent<MeshRenderer>();
+    
     std::chrono::high_resolution_clock timer;
     using ms = std::chrono::duration<float, std::milli>;
     glEnable(GL_DEPTH_TEST);
@@ -87,6 +89,15 @@ int main(int, char**)
         auto start = timer.now();
         frameNum++;
 
+        //Run through scene object components
+        for (size_t i = 0; i < scene->gameObjects.size(); i++)
+        {
+            for (size_t j = 0; j < scene->gameObjects[i]->components.size(); j++)
+            {
+                (scene->gameObjects[i]->components[j])->Update();
+            }
+        }
+        
         glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -99,10 +110,10 @@ int main(int, char**)
 
         timeElapsed += deltaTime;
 
-        if(timeElapsed > 5.0f)
+        if(timeElapsed > 1.0f)
         {
             timeElapsed = 0.0f;
-            std::cout << "FPS: " << frameNum / 5 << "\n";
+            std::cout << "FPS: " << frameNum << "\n";
             frameNum = 0;
         }
 
