@@ -12,6 +12,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <chrono>
+#include <memory>
 
 #include <filesystem>
 
@@ -75,7 +76,8 @@ int main(int, char**)
 
     Scene* scene = new Scene();
     GameObject gameobj = GameObject(scene, "Basic Object");
-    Component* genericComponent = gameobj.addComponent<Component>();
+
+    std::unique_ptr<Component> com = gameobj.addComponent<Component>();
 
     std::chrono::high_resolution_clock timer;
     using ms = std::chrono::duration<float, std::milli>;
