@@ -7,7 +7,9 @@
 
 class Scene
 {
-    
+public:
+    Scene();
+    std::vector<GameObject*> gameObjects;
 };
 
 #endif

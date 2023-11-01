@@ -73,7 +73,8 @@ int main(int, char**)
 
     float deltaTime = 0.0f;
 
-    GameObject gameobj = GameObject();
+    Scene* scene = new Scene();
+    GameObject gameobj = GameObject(scene, "Basic Object");
     Component* genericComponent = gameobj.addComponent<Component>();
 
     std::chrono::high_resolution_clock timer;
@@ -96,10 +97,10 @@ int main(int, char**)
 
         timeElapsed += deltaTime;
 
-        if(timeElapsed > 1.0f)
+        if(timeElapsed > 5.0f)
         {
             timeElapsed = 0.0f;
-            std::cout << "FPS: " << frameNum << "\n";
+            std::cout << "FPS: " << frameNum / 5 << "\n";
             frameNum = 0;
         }
 
@@ -121,7 +122,11 @@ int main(int, char**)
         map.Draw(mapShader);
 
         ImGui::Begin("Editor");
-        ImGui::Text("This is a window!");
+        for (size_t i = 0; i < scene->gameObjects.size(); i++)
+        {
+            ImGui::Text(scene->gameObjects[i]->name.c_str());
+        }
+        
         ImGui::End();
 
         ImGui::Render();
@@ -151,6 +156,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_F12 && action == GLFW_PRESS)
     {
         cursorActive = !cursorActive;
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (cursorActive * 2));
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (!cursorActive * 2));
     }
 }

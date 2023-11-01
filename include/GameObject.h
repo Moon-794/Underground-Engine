@@ -1,16 +1,19 @@
 #ifndef GAMEOBJECT
 #define GAMEOBJECT
 
-#include "Scene.h"
 #include "Component.h"
+#include <vector>
+
+//Forward declare scene
+class Scene;
 
 class GameObject
 {
 public:
-    GameObject();
-
+    GameObject(Scene* scene, std::string name = std::string("GameObject"));
     std::vector<Component*> components;
-    
+    std::string name;
+
     template<typename T>
     T* addComponent()
     {
@@ -20,6 +23,11 @@ public:
 
         return component;
     }
+
+private:
+    Scene* gameScene;
 };
+
+#include "Scene.h"
 
 #endif
