@@ -15,6 +15,7 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include <memory>
+#include <typeinfo>
 
 #include <filesystem>
 
@@ -94,7 +95,7 @@ int main(int, char**)
         {
             for (size_t j = 0; j < scene->gameObjects[i]->components.size(); j++)
             {
-                (scene->gameObjects[i]->components[j])->Update();
+                scene->gameObjects[i]->UpdateComponents();
             }
         }
         
@@ -137,7 +138,19 @@ int main(int, char**)
         ImGui::Begin("Editor");
         for (size_t i = 0; i < scene->gameObjects.size(); i++)
         {
-            ImGui::Text(scene->gameObjects[i]->name.c_str());
+            bool isExpanded = ImGui::TreeNodeEx((scene->gameObjects[i]->name + " : GameObject").c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+            if(isExpanded)
+            {
+                for (size_t j = 0; j < scene->gameObjects[i]->components.size(); j++)
+                {
+                    std::shared_ptr<Component> com = scene->gameObjects[i]->components[j];
+                    
+                    ImGui::Text((*com).GetName().c_str());
+                }
+                
+                ImGui::TreePop();
+            }
         }
         
         ImGui::End();

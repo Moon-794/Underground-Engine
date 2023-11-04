@@ -11,10 +11,13 @@ public:
     Component();
     ~Component();
 
+    std::string name;
+
     virtual void Start() = 0;
     virtual void Update() = 0;
+    virtual std::string GetName() = 0;
 
-    GameObject* parent;
+    GameObject* gameObject;
 };
 
 #endif
