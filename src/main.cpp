@@ -72,10 +72,16 @@ int main(int, char**)
 
     Scene* scene = new Scene();
     GameObject gameobj = GameObject(scene, "Basic Object");
+    gameobj.addComponent<MeshRenderer>();
 
+    //Create editor
     std::unique_ptr<Editor> editor = std::make_unique<Editor>(scene, window);
 
-    gameobj.addComponent<MeshRenderer>();
+    //Setup projection matrix and set it to the shader
+    mapShader.use();
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
+    mapShader.setMat4("projection", projection);
     
     std::chrono::high_resolution_clock timer;
     using ms = std::chrono::duration<float, std::milli>;
@@ -106,10 +112,6 @@ int main(int, char**)
         view = glm::rotate(view, -glm::radians(player.pitch), glm::vec3(1, 0, 0));
         view = glm::rotate(view, glm::radians(player.yaw), glm::vec3(0, 1, 0));
         view = glm::translate(view, player.position);
-
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
-        mapShader.setMat4("projection", projection);
         mapShader.setMat4("view", view);
 
         glm::mat4 model = glm::mat4(1.0f);
