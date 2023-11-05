@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Time.h"
 #include "Scene.h"
+#include "Editor.h"
 
 #include "Components/MeshRenderer.h"
 
@@ -56,14 +57,6 @@ int main(int, char**)
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetKeyCallback(window, key_callback);
-
-    //IMGUI
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 460");
     
     Player player = Player();
     player.position = glm::vec3(0.0f, -2.0f, 0.0f);
@@ -80,6 +73,8 @@ int main(int, char**)
     Scene* scene = new Scene();
     GameObject gameobj = GameObject(scene, "Basic Object");
 
+    std::unique_ptr<Editor> editor = std::make_unique<Editor>(scene, window);
+
     gameobj.addComponent<MeshRenderer>();
     
     std::chrono::high_resolution_clock timer;
@@ -89,22 +84,9 @@ int main(int, char**)
     {
         auto start = timer.now();
         frameNum++;
-
-        //Run through scene object components
-        for (size_t i = 0; i < scene->gameObjects.size(); i++)
-        {
-            for (size_t j = 0; j < scene->gameObjects[i]->components.size(); j++)
-            {
-                scene->gameObjects[i]->UpdateComponents();
-            }
-        }
         
         glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
 
         //Process Input From Player
         player.ProcessInputs(window, deltaTime, cursorActive);
@@ -135,28 +117,9 @@ int main(int, char**)
         mapShader.setMat4("model", model);
         map.Draw(mapShader);
 
-        ImGui::Begin("Editor");
-        for (size_t i = 0; i < scene->gameObjects.size(); i++)
-        {
-            bool isExpanded = ImGui::TreeNodeEx((scene->gameObjects[i]->name + " : GameObject").c_str(), ImGuiTreeNodeFlags_DefaultOpen);
-
-            if(isExpanded)
-            {
-                for (size_t j = 0; j < scene->gameObjects[i]->components.size(); j++)
-                {
-                    std::shared_ptr<Component> com = scene->gameObjects[i]->components[j];
-                    
-                    ImGui::Text((*com).GetName().c_str());
-                }
-                
-                ImGui::TreePop();
-            }
-        }
-        
-        ImGui::End();
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        editor->FrameStart();
+        editor->DrawSceneHierarchy();
+        editor->FrameEnd();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -165,10 +128,6 @@ int main(int, char**)
 
         deltaTime = std::chrono::duration_cast<ms>(stop - start).count() / 1000;
     }
-
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 
     //Terminate GLFW
     glfwDestroyWindow(window);

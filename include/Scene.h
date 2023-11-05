@@ -9,6 +9,8 @@ class Scene
 {
 public:
     Scene();
+    void UpdateScene();
+    
     std::vector<GameObject*> gameObjects;
 };
 
