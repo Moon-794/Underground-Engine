@@ -6,6 +6,12 @@
 class MeshRenderer : public Component
 {
 public:
+
+    std::string GetName() override
+    {
+        return "Mesh Renderer";
+    }
+
     void Start() override
     {
 
@@ -13,7 +19,7 @@ public:
 
     void Update() override
     {
-        
+        //Draw
     }
 };
 
