@@ -1,13 +1,9 @@
-#include "IMGUI/imgui.h"
-#include "IMGUI/imgui_impl_glfw.h"
-#include "IMGUI/imgui_impl_opengl3.h"
-
 #include "Shader.h"
 #include "Model.h"
 #include "Player.h"
-#include "Time.h"
 #include "Scene.h"
 #include "Editor.h"
+#include "Engine/Time.h"
 
 #include "Components/MeshRenderer.h"
 
@@ -57,6 +53,7 @@ int main(int, char**)
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetKeyCallback(window, key_callback);
+    glEnable(GL_DEPTH_TEST);
     
     Player player = Player();
     player.position = glm::vec3(0.0f, -2.0f, 0.0f);
@@ -64,48 +61,32 @@ int main(int, char**)
     Shader mapShader = Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
     Model map = Model("Models/map.obj");
 
-    float timeElapsed = 0.0f;
-    float timerLimit = 1.0f;
-    float frameNum = 0;
-
     float deltaTime = 0.0f;
 
     Scene* scene = new Scene();
     GameObject gameobj = GameObject(scene, "Basic Object");
     gameobj.addComponent<MeshRenderer>();
-
+    
     //Create editor
     std::unique_ptr<Editor> editor = std::make_unique<Editor>(scene, window);
+
+    //Create Game Time
+    std::unique_ptr<UE::Time> gameTime = std::make_unique<UE::Time>();
 
     //Setup projection matrix and set it to the shader
     mapShader.use();
     glm::mat4 projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
     mapShader.setMat4("projection", projection);
-    
-    std::chrono::high_resolution_clock timer;
-    using ms = std::chrono::duration<float, std::milli>;
-    glEnable(GL_DEPTH_TEST);
+
     while(!glfwWindowShouldClose(window))
-    {
-        auto start = timer.now();
-        frameNum++;
-        
+    {   
+        gameTime->CalculateDeltaTime();
         glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //Process Input From Player
-        player.ProcessInputs(window, deltaTime, cursorActive);
-
-        timeElapsed += deltaTime;
-
-        if(timeElapsed > 1.0f)
-        {
-            timeElapsed = 0.0f;
-            std::cout << "FPS: " << frameNum << "\n";
-            frameNum = 0;
-        }
-
+        player.ProcessInputs(window, gameTime->GetDeltaTime(), cursorActive);
         mapShader.use();
         //Get view/proj matrix for mesh drawing
         glm::mat4 view = glm::mat4(1.0f);
@@ -125,10 +106,6 @@ int main(int, char**)
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        auto stop = timer.now();
-
-        deltaTime = std::chrono::duration_cast<ms>(stop - start).count() / 1000;
     }
 
     //Terminate GLFW

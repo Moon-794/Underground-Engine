@@ -27,7 +27,8 @@ src/model.cpp
 src/ECS/scene.cpp 
 src/ECS/gameObject.cpp 
 src/ECS/component.cpp
-src/editor.cpp)
+src/editor.cpp
+src/time.cpp)
 
 target_link_libraries(Test libglfw3dll.a assimp::assimp)
 
