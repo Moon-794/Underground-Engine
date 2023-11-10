@@ -64,20 +64,17 @@ int main(int, char**)
     float deltaTime = 0.0f;
 
     Scene* scene = new Scene();
-    GameObject gameobj = GameObject(scene, "Basic Object");
-    gameobj.addComponent<MeshRenderer>();
-    
-    //Create editor
     std::unique_ptr<Editor> editor = std::make_unique<Editor>(scene, window);
-
-    //Create Game Time
     std::unique_ptr<UE::Time> gameTime = std::make_unique<UE::Time>();
+    
+    GameObject gameobj = GameObject(scene, "Basic Object");
+    gameobj.addComponent<MeshRenderer>("Hello");
 
     //Setup projection matrix and set it to the shader
     mapShader.use();
     glm::mat4 projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
-    mapShader.setMat4("projection", projection);
+    mapShader.setMat4("projection", projection); 
 
     while(!glfwWindowShouldClose(window))
     {   

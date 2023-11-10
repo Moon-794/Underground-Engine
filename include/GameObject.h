@@ -23,10 +23,10 @@ public:
     std::vector<std::shared_ptr<Component>> components;
 
     //Template for adding components, returns a pointer
-    template<typename T>
-    std::unique_ptr<T> addComponent()
+    template<typename T, typename... Args>
+    std::unique_ptr<T> addComponent(Args&&... args)
     {
-        std::unique_ptr<T> component = std::make_unique<T>();
+        std::unique_ptr<T> component = std::make_unique<T>(std::forward<Args>(args)...);
         component->gameObject = this;
         components.push_back(std::move(component));
         return component;
