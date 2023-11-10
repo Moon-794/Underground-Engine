@@ -1,2 +1,7 @@
+General Todo
 > Make Gameobject header only
 > Replace raw pointers for gameobjects with smart pointers
+
+Checklist for Beta
+> Editor shows complete scene hierarchy with children and components.
+> Encapsulate all glm functions/matrix stuff
