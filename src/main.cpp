@@ -64,20 +64,21 @@ int main(int, char**)
     float deltaTime = 0.0f;
 
     Scene* scene = new Scene();
-    GameObject gameobj = GameObject(scene, "Basic Object");
-    gameobj.addComponent<MeshRenderer>();
-    
-    //Create editor
     std::unique_ptr<Editor> editor = std::make_unique<Editor>(scene, window);
-
-    //Create Game Time
     std::unique_ptr<UE::Time> gameTime = std::make_unique<UE::Time>();
+    
+    GameObject* gameobj = new GameObject(scene, "Basic Object");
+    gameobj->addComponent<MeshRenderer>();
+    scene->camera->SetParent(gameobj);
 
     //Setup projection matrix and set it to the shader
     mapShader.use();
     glm::mat4 projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
-    mapShader.setMat4("projection", projection);
+    mapShader.setMat4("projection", projection); 
+
+    glm::mat4 model = glm::mat4(1.0f);
+    mapShader.setMat4("model", model);
 
     while(!glfwWindowShouldClose(window))
     {   
@@ -88,6 +89,7 @@ int main(int, char**)
         //Process Input From Player
         player.ProcessInputs(window, gameTime->GetDeltaTime(), cursorActive);
         mapShader.use();
+
         //Get view/proj matrix for mesh drawing
         glm::mat4 view = glm::mat4(1.0f);
         view = glm::rotate(view, -glm::radians(player.pitch), glm::vec3(1, 0, 0));
@@ -95,18 +97,17 @@ int main(int, char**)
         view = glm::translate(view, player.position);
         mapShader.setMat4("view", view);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-        mapShader.setMat4("model", model);
-        map.Draw(mapShader);
+        map.meshes[0].Draw(mapShader);
 
         editor->FrameStart();
-        editor->DrawSceneHierarchy();
+        editor->DrawSceneHierarchy(); 
         editor->FrameEnd();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    delete gameobj;
 
     //Terminate GLFW
     glfwDestroyWindow(window);

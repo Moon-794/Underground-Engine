@@ -4,6 +4,8 @@
 #include "Component.h"
 #include <vector>
 #include <memory>
+#include <vector>
+#include <algorithm>
 
 //Forward declare scene
 class Scene;
@@ -18,15 +20,14 @@ public:
     //Use this for non-root objects
     GameObject(GameObject* parent, std::string name = std::string("GameObject"));
 
-    //Arbitrary Object Data
     std::string name;
     std::vector<std::shared_ptr<Component>> components;
 
     //Template for adding components, returns a pointer
-    template<typename T>
-    std::unique_ptr<T> addComponent()
+    template<typename T, typename... Args>
+    std::unique_ptr<T> addComponent(Args&&... args)
     {
-        std::unique_ptr<T> component = std::make_unique<T>();
+        std::unique_ptr<T> component = std::make_unique<T>(std::forward<Args>(args)...);
         component->gameObject = this;
         components.push_back(std::move(component));
         return component;
@@ -43,15 +44,18 @@ public:
         //Repeat recursively for all child objects
         for (size_t i = 0; i < childObjects.size(); i++)
         {
-            childObjects[i].UpdateComponents();
+            childObjects[i]->UpdateComponents();
         }
         
     };
 
+    void SetParent(GameObject* newParent);
+    std::vector<GameObject*> childObjects;
+    
 private:
     Scene* gameScene;
     GameObject* parent = nullptr;
-    std::vector<GameObject> childObjects;
+    
 };
 
 #include "Scene.h"

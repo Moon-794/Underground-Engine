@@ -2,24 +2,33 @@
 #define MESH_RENDERER
 
 #include "Component.h"
+#include "Mesh.h"
 
 class MeshRenderer : public Component
 {
+
 public:
+
+    MeshRenderer()
+    {
+        Start();
+    }
 
     std::string GetName() override
     {
         return "Mesh Renderer";
     }
 
-    void Start() override
-    {
-
-    }
-
     void Update() override
     {
         //Draw
+    }
+
+private:
+    
+    void Start() override
+    {
+        
     }
 };
 

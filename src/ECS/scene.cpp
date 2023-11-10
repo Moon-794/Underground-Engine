@@ -2,7 +2,7 @@
 
 Scene::Scene()
 {
-    std::cout << "Scene Created\n";
+    camera = new GameObject(this, "Camera");
 }
 
 void Scene::UpdateScene()
