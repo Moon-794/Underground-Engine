@@ -19,6 +19,7 @@ public:
 
 private:
     Scene* scene;
+    void DrawGameObject(GameObject* obj);
 };
 
 #endif

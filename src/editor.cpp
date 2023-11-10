@@ -23,32 +23,34 @@ void Editor::FrameStart()
 void Editor::DrawSceneHierarchy()
 {
     ImGui::Begin("Editor");
-        for (size_t i = 0; i < scene->gameObjects.size(); i++)
-        {
-            bool isExpanded = ImGui::TreeNodeEx((scene->gameObjects[i]->name + " : GameObject").c_str(), ImGuiTreeNodeFlags_DefaultOpen);
-
-            //Gameobject Tree Object
-            if(isExpanded)
-            {
-                //Loop through all components in gameobject
-                for (size_t j = 0; j < scene->gameObjects[i]->components.size(); j++)
-                {
-                    //List Component Game
-                    std::shared_ptr<Component> com = scene->gameObjects[i]->components[j];
-                    ImGui::Text((*com).GetName().c_str());
-                }
-                
-                ImGui::TreePop();
-            }
-        }
+    
+    for (size_t i = 0; i < scene->gameObjects.size(); i++)
+    {
+        DrawGameObject(scene->gameObjects[i]);
+    }
         
-        ImGui::End();
+    ImGui::End();
 }
 
 void Editor::FrameEnd()
 {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Editor::DrawGameObject(GameObject* obj)
+{
+    bool isExpanded = ImGui::TreeNodeEx((obj->name + " : GameObject").c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+    if(isExpanded)
+    {
+        for (size_t i = 0; i < obj->childObjects.size(); i++)
+        {
+            DrawGameObject(obj->childObjects[i]);
+        }
+
+        ImGui::TreePop();
+    }
 }
 
 Editor::~Editor()

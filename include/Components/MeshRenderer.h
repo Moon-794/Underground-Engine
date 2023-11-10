@@ -9,9 +9,8 @@ class MeshRenderer : public Component
 
 public:
 
-    MeshRenderer(std::string test)
+    MeshRenderer()
     {
-        std::cout << test << "\n";
         Start();
     }
 
@@ -29,8 +28,7 @@ private:
     
     void Start() override
     {
-        //Setup mesh and stuff
-        std::cout << "Mesh setup!" << "\n";
+        
     }
 };
 

@@ -1,0 +1,2 @@
+> Make Gameobject header only
+> Replace raw pointers for gameobjects with smart pointers
