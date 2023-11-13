@@ -54,15 +54,11 @@ int main(int, char**)
     float timer = 0;
     while(!glfwWindowShouldClose(window))
     {
-        gameTime->CalculateDeltaTime();
-
-        FPSCounter(gameTime->GetDeltaTime(), frameCount, timer);
         UpdateScene(scene);
-
-        //GLFW Boilerplate
-        glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        
+        gameTime->CalculateDeltaTime();
+        FPSCounter(gameTime->GetDeltaTime(), frameCount, timer);
+        
         mapShader.use();
         mapShader.setMat4("view", scene->GetView());
         map.meshes[0].Draw(mapShader);
@@ -86,6 +82,10 @@ int main(int, char**)
 
 void UpdateScene(Scene* scene)
 {
+    //GLFW Boilerplate
+    glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     for (size_t i = 0; i < scene->gameObjects.size(); i++)
     {
         scene->gameObjects[i]->UpdateComponents();
