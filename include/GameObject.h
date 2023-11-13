@@ -1,6 +1,8 @@
 #ifndef GAMEOBJECT
 #define GAMEOBJECT
 
+#include <glm/glm.hpp>
+#include "glm/gtc/matrix_transform.hpp"
 #include "Component.h"
 #include <vector>
 #include <memory>
@@ -16,12 +18,16 @@ class GameObject
 public:
     //Use this for root level objects
     GameObject(Scene* scene, std::string name = std::string("GameObject"));
-
     //Use this for non-root objects
     GameObject(GameObject* parent, std::string name = std::string("GameObject"));
 
     std::string name;
     std::vector<std::shared_ptr<Component>> components;
+
+    //Transformation properties
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 scale;
 
     //Template for adding components, returns a pointer
     template<typename T, typename... Args>

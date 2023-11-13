@@ -61,8 +61,6 @@ int main(int, char**)
     Shader mapShader = Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
     Model map = Model("Models/map.obj");
 
-    float deltaTime = 0.0f;
-
     Scene* scene = new Scene();
     std::unique_ptr<Editor> editor = std::make_unique<Editor>(scene, window);
     std::unique_ptr<UE::Time> gameTime = std::make_unique<UE::Time>();
@@ -73,32 +71,34 @@ int main(int, char**)
 
     //Setup projection matrix and set it to the shader
     mapShader.use();
-    glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
-    mapShader.setMat4("projection", projection); 
+    mapShader.setMat4("projection", scene->projection); 
 
     glm::mat4 model = glm::mat4(1.0f);
     mapShader.setMat4("model", model);
 
     while(!glfwWindowShouldClose(window))
     {   
+        //Input system and Time system
+        player.ProcessInputs(window, gameTime->GetDeltaTime(), cursorActive);
         gameTime->CalculateDeltaTime();
+
+        //GLFW Boiler
         glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //Process Input From Player
-        player.ProcessInputs(window, gameTime->GetDeltaTime(), cursorActive);
+        //store appropriate shaders in meshrenderer?
         mapShader.use();
 
-        //Get view/proj matrix for mesh drawing
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::rotate(view, -glm::radians(player.pitch), glm::vec3(1, 0, 0));
-        view = glm::rotate(view, glm::radians(player.yaw), glm::vec3(0, 1, 0));
-        view = glm::translate(view, player.position);
-        mapShader.setMat4("view", view);
+        //Better approach is make a movement component and set camera values within that script
+        scene->camera->rotation = glm::vec3(player.pitch, player.yaw, 0);
+        scene->camera->position = player.position;
 
+        ///Shader stuff
+        mapShader.setMat4("view", scene->GetView());
+        //Meshrenderer component should call this
         map.meshes[0].Draw(mapShader);
 
+        //You are gonna get alot more complicated soon
         editor->FrameStart();
         editor->DrawSceneHierarchy(); 
         editor->FrameEnd();
@@ -107,7 +107,7 @@ int main(int, char**)
         glfwPollEvents();
     }
 
-    delete gameobj;
+    delete scene;
 
     //Terminate GLFW
     glfwDestroyWindow(window);

@@ -27,8 +27,6 @@ void Player::ProcessInputs(GLFWwindow* window, GLfloat deltaTime, bool cursorAct
     
     position += moveDir * cameraSpeed * deltaTime;
 
-    
-
     if(!cursorActive)
         ProcessMouseMovements(window);
 }
