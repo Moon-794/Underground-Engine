@@ -22,35 +22,16 @@ const float SCREEN_HEIGHT = 720.0f;
 bool cursorActive = false;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName);
 
 int main(int, char**) 
 {
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "The Underground", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
+    GLFWwindow* window = CreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "The Underground");
+    if(window == nullptr)
         return -1;
-    }
 
-    glfwMakeContextCurrent(window);
-
-    //Set vsync OFF for benchmarking
-    glfwSwapInterval(0);
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetKeyCallback(window, key_callback);
     glEnable(GL_DEPTH_TEST);
@@ -124,3 +105,40 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (!cursorActive * 2));
     }
 }
+
+
+GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName)
+{
+    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, windowName.c_str(), NULL, NULL);
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return nullptr;
+    }
+    else
+    {   
+        //Window Setup
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+        //Make window the current focus
+        glfwMakeContextCurrent(window);
+        
+        //Set vsync OFF for benchmarking
+        glfwSwapInterval(0);
+
+        //Load GLAD (needs an context)
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        {
+            std::cout << "Failed to initialize GLAD" << std::endl;
+            return nullptr;
+        }
+
+        glViewport(0, 0, screenWidth, screenHeight);
+
+        return window;
+    }
+}
+
