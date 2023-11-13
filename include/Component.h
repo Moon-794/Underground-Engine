@@ -2,6 +2,7 @@
 #define COMPONENT
 
 #include <iostream>
+#include <memory>
 
 class GameObject;
 
@@ -17,9 +18,6 @@ public:
     virtual std::string GetName() = 0;
 
     GameObject* gameObject;
-
-private:
-    virtual void Start() = 0;
 
 };
 

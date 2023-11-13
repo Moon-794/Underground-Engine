@@ -1,11 +1,11 @@
 #include "Shader.h"
 #include "Model.h"
-#include "Player.h"
 #include "Scene.h"
 #include "Editor.h"
 #include "Engine/Time.h"
 
 #include "Components/MeshRenderer.h"
+#include "Components/PlayerMove.h"
 
 #include <iostream>
 #include <glad/glad.h>
@@ -13,7 +13,6 @@
 #include <chrono>
 #include <memory>
 #include <typeinfo>
-
 #include <filesystem>
 
 const float SCREEN_WIDTH = 1280.0f;
@@ -21,53 +20,29 @@ const float SCREEN_HEIGHT = 720.0f;
 
 bool cursorActive = false;
 
+GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName);
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void FPSCounter(float deltaTime, int& frameCount, float& timer);
+void UpdateScene(Scene* scene);
 
 int main(int, char**) 
 {
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "The Underground", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
+    GLFWwindow* window = CreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "The Underground");
+    if(window == nullptr)
         return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-
-    //Set vsync OFF for benchmarking
-    glfwSwapInterval(0);
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetKeyCallback(window, key_callback);
-    glEnable(GL_DEPTH_TEST);
-    
-    Player player = Player();
-    player.position = glm::vec3(0.0f, -2.0f, 0.0f);
 
     Shader mapShader = Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
     Model map = Model("Models/map.obj");
 
     Scene* scene = new Scene();
     std::unique_ptr<Editor> editor = std::make_unique<Editor>(scene, window);
-    std::unique_ptr<UE::Time> gameTime = std::make_unique<UE::Time>();
+    std::shared_ptr<UE::Time> gameTime = std::make_shared<UE::Time>();
     
-    GameObject* gameobj = new GameObject(scene, "Basic Object");
-    gameobj->addComponent<MeshRenderer>();
-    scene->camera->SetParent(gameobj);
+    scene->camera->addComponent<PlayerMove>(window, gameTime);
+    scene->camera->position = glm::vec3(0.0, -2.0, 0.0);
 
     //Setup projection matrix and set it to the shader
     mapShader.use();
@@ -75,27 +50,17 @@ int main(int, char**)
 
     glm::mat4 model = glm::mat4(1.0f);
     mapShader.setMat4("model", model);
-
+    int frameCount = 0;
+    float timer = 0;
     while(!glfwWindowShouldClose(window))
-    {   
-        //Input system and Time system
-        player.ProcessInputs(window, gameTime->GetDeltaTime(), cursorActive);
+    {
+        UpdateScene(scene);
+        
         gameTime->CalculateDeltaTime();
-
-        //GLFW Boiler
-        glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        //store appropriate shaders in meshrenderer?
+        FPSCounter(gameTime->GetDeltaTime(), frameCount, timer);
+        
         mapShader.use();
-
-        //Better approach is make a movement component and set camera values within that script
-        scene->camera->rotation = glm::vec3(player.pitch, player.yaw, 0);
-        scene->camera->position = player.position;
-
-        ///Shader stuff
         mapShader.setMat4("view", scene->GetView());
-        //Meshrenderer component should call this
         map.meshes[0].Draw(mapShader);
 
         //You are gonna get alot more complicated soon
@@ -115,6 +80,30 @@ int main(int, char**)
     return 0;
 }
 
+void UpdateScene(Scene* scene)
+{
+    //GLFW Boilerplate
+    glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    for (size_t i = 0; i < scene->gameObjects.size(); i++)
+    {
+        scene->gameObjects[i]->UpdateComponents();
+    }
+}
+
+void FPSCounter(float deltaTime, int& frameCount, float& timer)
+{
+    frameCount++;
+        timer += deltaTime;
+
+        if(timer > 1.0f)
+        {
+            std::cout << frameCount << "\n";
+            frameCount = 0;
+            timer = 0;
+        }
+}
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -124,3 +113,41 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (!cursorActive * 2));
     }
 }
+
+
+GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName)
+{
+    //Window Setup
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, windowName.c_str(), NULL, NULL);
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return nullptr;
+    }
+    else
+    {   
+        //Make window the current focus
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(0);
+
+        //Load GLAD (needs an context)
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        {
+            std::cout << "Failed to initialize GLAD" << std::endl;
+            return nullptr;
+        }
+
+        glViewport(0, 0, screenWidth, screenHeight);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetKeyCallback(window, key_callback);
+        glEnable(GL_DEPTH_TEST);
+
+        return window;
+    }
+}
+

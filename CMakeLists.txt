@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.0)
 project(Test VERSION 0.1.0)
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "bin")
+set (CMAKE_BUILD_TYPE "Debug")
 
 include(CTest)
 enable_testing()
@@ -21,8 +22,7 @@ src/ImGUI/imgui_impl_opengl3.cpp
 src/ImGUI/imgui_tables.cpp 
 src/ImGUI/imgui_widgets.cpp 
 src/ImGUI/imgui.cpp
-src/mesh.cpp 
-src/Player.cpp 
+src/mesh.cpp
 src/model.cpp 
 src/ECS/scene.cpp 
 src/ECS/gameObject.cpp 
