@@ -23,6 +23,7 @@ bool cursorActive = false;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName);
+void FPSCounter(float deltaTime, int& frameCount, float& timer);
 
 int main(int, char**) 
 {
@@ -31,10 +32,6 @@ int main(int, char**)
     GLFWwindow* window = CreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "The Underground");
     if(window == nullptr)
         return -1;
-
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetKeyCallback(window, key_callback);
-    glEnable(GL_DEPTH_TEST);
     
     Player player = Player();
     player.position = glm::vec3(0.0f, -2.0f, 0.0f);
@@ -56,14 +53,17 @@ int main(int, char**)
 
     glm::mat4 model = glm::mat4(1.0f);
     mapShader.setMat4("model", model);
-
+    int frameCount = 0;
+    float timer = 0;
     while(!glfwWindowShouldClose(window))
     {   
         //Input system and Time system
         player.ProcessInputs(window, gameTime->GetDeltaTime(), cursorActive);
         gameTime->CalculateDeltaTime();
 
-        //GLFW Boiler
+        FPSCounter(gameTime->GetDeltaTime(), frameCount, timer);
+
+        //GLFW Boilerplate
         glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -96,6 +96,18 @@ int main(int, char**)
     return 0;
 }
 
+void FPSCounter(float deltaTime, int& frameCount, float& timer)
+{
+    frameCount++;
+        timer += deltaTime;
+
+        if(timer > 1.0f)
+        {
+            std::cout << frameCount << "\n";
+            frameCount = 0;
+            timer = 0;
+        }
+}
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -109,6 +121,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName)
 {
+    //Window Setup
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, windowName.c_str(), NULL, NULL);
     if (window == NULL)
     {
@@ -118,15 +135,8 @@ GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowNa
     }
     else
     {   
-        //Window Setup
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
         //Make window the current focus
         glfwMakeContextCurrent(window);
-        
-        //Set vsync OFF for benchmarking
         glfwSwapInterval(0);
 
         //Load GLAD (needs an context)
@@ -137,6 +147,9 @@ GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowNa
         }
 
         glViewport(0, 0, screenWidth, screenHeight);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetKeyCallback(window, key_callback);
+        glEnable(GL_DEPTH_TEST);
 
         return window;
     }
