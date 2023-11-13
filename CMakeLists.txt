@@ -22,8 +22,7 @@ src/ImGUI/imgui_impl_opengl3.cpp
 src/ImGUI/imgui_tables.cpp 
 src/ImGUI/imgui_widgets.cpp 
 src/ImGUI/imgui.cpp
-src/mesh.cpp 
-src/Player.cpp 
+src/mesh.cpp
 src/model.cpp 
 src/ECS/scene.cpp 
 src/ECS/gameObject.cpp 

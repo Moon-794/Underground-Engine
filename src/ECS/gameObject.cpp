@@ -26,7 +26,7 @@ void GameObject::SetParent(GameObject* newParent)
         auto it = std::find(parent->childObjects.begin(), parent->childObjects.end(), this);
         parent->childObjects.erase(it);
     }
-    
+
     //Reassign to parent
     parent = newParent;
     parent->childObjects.push_back(this);

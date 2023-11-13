@@ -11,7 +11,7 @@ public:
 
     MeshRenderer()
     {
-        Start();
+        
     }
 
     std::string GetName() override
@@ -22,13 +22,6 @@ public:
     void Update() override
     {
         //Draw
-    }
-
-private:
-    
-    void Start() override
-    {
-        
     }
 };
 
