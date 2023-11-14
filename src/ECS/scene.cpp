@@ -2,7 +2,7 @@
 
 Scene::Scene()
 {
-    camera = new GameObject(this, "Camera");
+    camera = std::make_unique<GameObject>(this, "Camera");
     projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
 }
 

@@ -42,34 +42,27 @@ int main(int, char**)
     std::shared_ptr<UE::Time> gameTime = std::make_shared<UE::Time>();
     
     scene->camera->addComponent<PlayerMove>(window, gameTime);
-    scene->camera->position = glm::vec3(0.0, -2.0, 0.0);
 
-    //Setup projection matrix and set it to the shader
-    mapShader.use();
-    mapShader.setMat4("projection", scene->projection); 
-
-    glm::mat4 model = glm::mat4(1.0f);
-    mapShader.setMat4("model", model);
+    GameObject* obj = new GameObject(scene, "Map");
+    obj->addComponent<MeshRenderer>(std::make_unique<Mesh>(map.meshes[0]), mapShader);
+    obj->position = glm::vec3(0, -2, 0);
+    
     int frameCount = 0;
     float timer = 0;
+
     while(!glfwWindowShouldClose(window))
     {
         UpdateScene(scene);
-        
         gameTime->CalculateDeltaTime();
         FPSCounter(gameTime->GetDeltaTime(), frameCount, timer);
         
-        mapShader.use();
-        mapShader.setMat4("view", scene->GetView());
-        map.meshes[0].Draw(mapShader);
-
         //You are gonna get alot more complicated soon
         editor->FrameStart();
-        editor->DrawSceneHierarchy(); 
+        editor->DrawSceneHierarchy();
         editor->FrameEnd();
 
         glfwSwapBuffers(window);
-        glfwPollEvents();
+        glfwPollEvents(); 
     }
 
     delete scene;

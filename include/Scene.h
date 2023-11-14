@@ -15,7 +15,7 @@ public:
     void UpdateScene();
     
 
-    GameObject* camera;
+    std::unique_ptr<GameObject> camera;
     std::vector<GameObject*> gameObjects;
 
     //Camera class / component

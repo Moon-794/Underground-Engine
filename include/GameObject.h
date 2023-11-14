@@ -57,11 +57,10 @@ public:
 
     void SetParent(GameObject* newParent);
     std::vector<GameObject*> childObjects;
-    
-private:
     Scene* gameScene;
+
+private:
     GameObject* parent = nullptr;
-    
 };
 
 #include "Scene.h"
