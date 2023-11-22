@@ -1,37 +1,12 @@
-#include "Shader.h"
-#include "AssetImporter/Model.h"
-#include "Scene.h"
-#include "GameTime/GameTime.h"
+#include "engine.h"
 
-#include "MeshRenderer.h"
-#include "PlayerMove.h"
-
-#include <iostream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <chrono>
-#include <memory>
-#include <typeinfo>
-#include <filesystem>
-
-const float SCREEN_WIDTH = 1280.0f;
-const float SCREEN_HEIGHT = 720.0f;
-
-bool cursorActive = false;
-
-GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName);
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void FPSCounter(float deltaTime, int& frameCount, float& timer);
-void UpdateScene(Scene* scene);
-
-int main(int, char**) 
+void RunEngine()
 {
     glfwInit();
 
     GLFWwindow* window = CreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "The Underground");
     if(window == nullptr)
-        return -1;
+        return;
 
     Shader mapShader = Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
     Model map = Model("Models/map.obj");
@@ -70,7 +45,6 @@ int main(int, char**)
     //Terminate GLFW
     glfwDestroyWindow(window);
     glfwTerminate();
-    return 0;
 }
 
 void UpdateScene(Scene* scene)
@@ -102,8 +76,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
     if (key == GLFW_KEY_F12 && action == GLFW_PRESS)
     {
-        cursorActive = !cursorActive;
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (!cursorActive * 2));
+        //cursorActive = !cursorActive;
+        //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (!cursorActive * 2));
     }
 }
 
