@@ -6,10 +6,10 @@
 
 namespace UE 
 {
-    class Time
+    class GameTime
     {
         public:
-            Time();
+            GameTime();
             void StartTime();
             void StopTime();
             void CalculateDeltaTime();

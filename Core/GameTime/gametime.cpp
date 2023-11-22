@@ -1,8 +1,8 @@
-#include "Engine/Time.h"
+#include "GameTime.h"
 
 namespace UE
 {
-    Time::Time()
+    GameTime::GameTime()
     {
         deltaTime = 0.0f;
 
@@ -10,7 +10,7 @@ namespace UE
         lastTime = currentTime;
     }
 
-    void Time::CalculateDeltaTime()
+    void GameTime::CalculateDeltaTime()
     {
         currentTime = timer.now();
 
@@ -18,7 +18,7 @@ namespace UE
         lastTime = currentTime;
     }
 
-    float Time::GetDeltaTime()
+    float GameTime::GetDeltaTime()
     {
         return deltaTime;
     }

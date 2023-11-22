@@ -1,11 +1,10 @@
 #include "Shader.h"
-#include "Model.h"
+#include "AssetImporter/Model.h"
 #include "Scene.h"
-#include "Editor.h"
-#include "Engine/Time.h"
+#include "GameTime/GameTime.h"
 
-#include "Components/MeshRenderer.h"
-#include "Components/PlayerMove.h"
+#include "MeshRenderer.h"
+#include "PlayerMove.h"
 
 #include <iostream>
 #include <glad/glad.h>
@@ -38,8 +37,7 @@ int main(int, char**)
     Model map = Model("Models/map.obj");
 
     Scene* scene = new Scene();
-    std::unique_ptr<Editor> editor = std::make_unique<Editor>(scene, window);
-    std::shared_ptr<UE::Time> gameTime = std::make_shared<UE::Time>();
+    std::shared_ptr<UE::GameTime> gameTime = std::make_shared<UE::GameTime>();
     
     scene->camera->addComponent<PlayerMove>(window, gameTime);
     scene->camera->position = glm::vec3(0.0, -2.0, 0.0);
@@ -62,11 +60,6 @@ int main(int, char**)
         mapShader.use();
         mapShader.setMat4("view", scene->GetView());
         map.meshes[0].Draw(mapShader);
-
-        //You are gonna get alot more complicated soon
-        editor->FrameStart();
-        editor->DrawSceneHierarchy(); 
-        editor->FrameEnd();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

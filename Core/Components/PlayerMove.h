@@ -1,14 +1,14 @@
 #ifndef PLAYER_MOVE
 #define PLAYER_MOVE
 
-#include "Component.h"
-#include "Engine/Time.h"
+#include "../ECS/Component.h"
+#include "GameTime/GameTime.h"
 
 class PlayerMove : public Component
 {
 public:
 
-    PlayerMove(GLFWwindow* window, std::shared_ptr<UE::Time> time)
+    PlayerMove(GLFWwindow* window, std::shared_ptr<UE::GameTime> time)
     {
         this->window = window;
         this->time = time;
@@ -27,7 +27,7 @@ public:
 
 private:
     GLFWwindow* window;
-    std::shared_ptr<UE::Time> time;
+    std::shared_ptr<UE::GameTime> time;
     glm::vec3 normalDirection;
 
     void ProcessMovement()
