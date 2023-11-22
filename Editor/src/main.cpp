@@ -17,10 +17,30 @@
 
 //Will probably change later but good enough for now.
 
+#include <GLFW/glfw3.h>
+#include "glad/glad.h"
 #include <iostream>
 
 int main()
 {
-    std::cout << "Hello, world!" << "\n";
+    glfwInit();
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    GLFWwindow* window = glfwCreateWindow(720, 600, "The Underground Editor", NULL, NULL);
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+    }
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(0);
+
+    glViewport(0, 0, 720, 600);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
     return 0;
 }
