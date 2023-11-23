@@ -32,7 +32,6 @@ namespace ProjectLoader
 
                     if(SUCCEEDED(hr))
                     {
-                        std::cout << "Path: " << pszFilePath << "\n";
                         std::wstring wPath = std::wstring(pszFilePath);
                         path = std::string(wPath.begin(), wPath.end());
                         CoTaskMemFree(pszFilePath);
