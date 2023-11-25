@@ -27,28 +27,10 @@
 
 #include <iostream>
 #include "engine.h"
-#include "ProjectLoader.h"
 
 int main()
 {
     std::cout << "Underground Editor - VA_2" << "\n";
-    std::cout << " > Press \"C\" to create a new project" << "\n";
-    std::cout << " > Press \"L\" to load an existing project" << "\n";
-
-    char choice;
-    std::cin >> choice;
-
-    if(choice == 'c')
-    {
-        //Create project
-    }
-    else if (choice == 'l')
-    {
-        //Load Existing Project
-        std::string path = ProjectLoader::SelectProjectDirectory();
-        std::cout << path << "\n";
-    }
-
     RunEngine();
     return 0;
 }
