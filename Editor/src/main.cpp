@@ -16,12 +16,39 @@
         //Components/
 
 //Will probably change later but good enough for now.
+//
+//Ok so, the primary purpose of the editor is to provide a set of tools to allow the developer to construct
+//a game by building scenes full of gameobjects with components.
+//While the game is in development, it will have the folder structure above, and changes made in the editor are
+//saved to file.
+
+//The editor can even preview the game, and finally build the game with the assets nicely secured
+//The building part will require using a terminal in code which sounds fun
 
 #include <iostream>
 #include "engine.h"
+#include "ProjectLoader.h"
 
 int main()
 {
+    std::cout << "Underground Editor - VA_2" << "\n";
+    std::cout << " > Press \"C\" to create a new project" << "\n";
+    std::cout << " > Press \"L\" to load an existing project" << "\n";
+
+    char choice;
+    std::cin >> choice;
+
+    if(choice == 'c')
+    {
+        //Create project
+    }
+    else if (choice == 'l')
+    {
+        //Load Existing Project
+        std::string path = ProjectLoader::SelectProjectDirectory();
+        std::cout << path << "\n";
+    }
+
     RunEngine();
     return 0;
 }

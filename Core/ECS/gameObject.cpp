@@ -15,7 +15,6 @@ GameObject::GameObject(GameObject* parent, std::string name)
 void GameObject::SetParent(GameObject* newParent)
 {
     //Remove gameobject from previous vector
-
     if(parent == nullptr)
     {
         auto it = std::find(gameScene->gameObjects.begin(), gameScene->gameObjects.end(), this);
