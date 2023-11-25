@@ -6,12 +6,11 @@
 
 class PlayerMove : public Component
 {
-public:
-
-    PlayerMove(GLFWwindow* window, std::shared_ptr<UE::GameTime> time)
+public: 
+    PlayerMove(GLFWwindow* window, UE::GameTime& time)
     {
-        this->window = window;
-        this->time = time;
+        this.window = window;
+        this.time = time;
     }
 
     std::string GetName() override
@@ -27,7 +26,7 @@ public:
 
 private:
     GLFWwindow* window;
-    std::shared_ptr<UE::GameTime> time;
+    UE::GameTime& time;
     glm::vec3 normalDirection;
 
     void ProcessMovement()
@@ -48,7 +47,7 @@ private:
         if(glm::length(moveDir) > 1.0f)
             moveDir = glm::normalize(moveDir);
     
-        gameObject->position += moveDir * cameraSpeed * time->GetDeltaTime();
+        gameObject->position += moveDir * cameraSpeed * time.GetDeltaTime();
 
     };
 

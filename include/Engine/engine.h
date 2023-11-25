@@ -14,11 +14,20 @@
 #include <typeinfo>
 #include <filesystem>
 
-const float SCREEN_WIDTH = 1280.0f;
-const float SCREEN_HEIGHT = 720.0f;
+class engine
+{
+public:
+    int windowWidth;
+    int windowHeight;
+    
+    GLFWwindow* window;
+    Scene currentScene;
+    UE::GameTime gameTime;
 
-GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void FPSCounter(float deltaTime, int& frameCount, float& timer);
-void UpdateScene(Scene* scene);
-void RunEngine();
+    void Init();
+    void Tick();
+    void UpdateScene();
+
+private:
+    GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName);
+};

@@ -1,25 +1,30 @@
 #include "engine.h"
 
-void RunEngine()
+void engine::Init()
 {
     glfwInit();
 
-    GLFWwindow* window = CreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "The Underground");
-    if(window == nullptr)
-        return;
+    currentScene = Scene();
+    gameTime = UE::GameTime();
 
+   window = CreateWindow(windowWidth, windowHeight, "The Underground");
+    if(window == nullptr)
+    {
+        std::cout << "ERR::Window not created.\n";
+    }
+}
+
+void engine::Tick()
+{
     Shader mapShader = Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
     Model map = Model("Models/map.obj");
-
-    Scene* scene = new Scene();
-    std::shared_ptr<UE::GameTime> gameTime = std::make_shared<UE::GameTime>();
     
-    scene->camera->addComponent<PlayerMove>(window, gameTime);
-    scene->camera->position = glm::vec3(0.0, -2.0, 0.0);
+    currentScene.camera->addComponent<PlayerMove>(window, gameTime);
+    currentScene.camera->position = glm::vec3(0.0, -2.0, 0.0);
 
     //Setup projection matrix and set it to the shader
     mapShader.use();
-    mapShader.setMat4("projection", scene->projection); 
+    mapShader.setMat4("projection", currentScene.projection); 
 
     glm::mat4 model = glm::mat4(1.0f);
     mapShader.setMat4("model", model);
@@ -27,62 +32,35 @@ void RunEngine()
     float timer = 0;
     while(!glfwWindowShouldClose(window))
     {
-        UpdateScene(scene);
-        
-        gameTime->CalculateDeltaTime();
-        FPSCounter(gameTime->GetDeltaTime(), frameCount, timer);
+        UpdateScene();
+        gameTime.CalculateDeltaTime();
         
         mapShader.use();
-        mapShader.setMat4("view", scene->GetView());
+        mapShader.setMat4("view", currentScene.GetView());
         map.meshes[0].Draw(mapShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    delete scene;
-
     //Terminate GLFW
     glfwDestroyWindow(window);
     glfwTerminate();
 }
 
-void UpdateScene(Scene* scene)
+void engine::UpdateScene()
 {
     //GLFW Boilerplate
     glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (size_t i = 0; i < scene->gameObjects.size(); i++)
+    for (size_t i = 0; i < currentScene.gameObjects.size(); i++)
     {
-        scene->gameObjects[i]->UpdateComponents();
+        currentScene.gameObjects[i]->UpdateComponents();
     }
 }
 
-void FPSCounter(float deltaTime, int& frameCount, float& timer)
-{
-    frameCount++;
-        timer += deltaTime;
-
-        if(timer > 1.0f)
-        {
-            std::cout << frameCount << "\n";
-            frameCount = 0;
-            timer = 0;
-        }
-}
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_F12 && action == GLFW_PRESS)
-    {
-        //cursorActive = !cursorActive;
-        //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (!cursorActive * 2));
-    }
-}
-
-
-GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName)
+GLFWwindow* engine::CreateWindow(int screenWidth, int screenHeight, std::string windowName)
 {
     //Window Setup
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -111,7 +89,6 @@ GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowNa
 
         glViewport(0, 0, screenWidth, screenHeight);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        glfwSetKeyCallback(window, key_callback);
         glEnable(GL_DEPTH_TEST);
 
         return window;
