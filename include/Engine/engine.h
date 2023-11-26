@@ -20,14 +20,14 @@ public:
     int windowWidth;
     int windowHeight;
     
-    GLFWwindow* window;
-    Scene currentScene;
-    UE::GameTime gameTime;
+    std::shared_ptr<GLFWwindow> window;
+    std::shared_ptr<Scene> currentScene;
+    std::shared_ptr<UE::GameTime> gameTime;
 
-    void Init();
+    void Init(int width, int height);
     void Tick();
     void UpdateScene();
 
 private:
-    GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName);
+    std::shared_ptr<GLFWwindow> CreateWindow(int screenWidth, int screenHeight, std::string windowName);
 };

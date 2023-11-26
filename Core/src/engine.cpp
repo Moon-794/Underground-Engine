@@ -1,13 +1,28 @@
 #include "engine.h"
 
-void engine::Init()
+typedef struct GLFWwindow GLFWwindow;
+
+struct GLFWWindowDeleter
 {
+    void operator()(GLFWwindow* window) const
+    {
+        if(window)
+            glfwDestroyWindow(window);
+    }
+};
+
+void engine::Init(int width, int height)
+{
+    this->windowWidth = width;
+    this->windowHeight = height;
+
     glfwInit();
 
-    currentScene = Scene();
-    gameTime = UE::GameTime();
+    currentScene = std::make_shared<Scene>();
+    currentScene->projection;
+    gameTime = std::make_shared<UE::GameTime>();
 
-   window = CreateWindow(windowWidth, windowHeight, "The Underground");
+    window = CreateWindow(windowWidth, windowHeight, "The Underground");
     if(window == nullptr)
     {
         std::cout << "ERR::Window not created.\n";
@@ -16,36 +31,16 @@ void engine::Init()
 
 void engine::Tick()
 {
-    Shader mapShader = Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
-    Model map = Model("Models/map.obj");
-    
-    currentScene.camera->addComponent<PlayerMove>(window, gameTime);
-    currentScene.camera->position = glm::vec3(0.0, -2.0, 0.0);
-
-    //Setup projection matrix and set it to the shader
-    mapShader.use();
-    mapShader.setMat4("projection", currentScene.projection); 
-
-    glm::mat4 model = glm::mat4(1.0f);
-    mapShader.setMat4("model", model);
-    int frameCount = 0;
-    float timer = 0;
-    while(!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window.get()))
     {
         UpdateScene();
-        gameTime.CalculateDeltaTime();
-        
-        mapShader.use();
-        mapShader.setMat4("view", currentScene.GetView());
-        map.meshes[0].Draw(mapShader);
+        gameTime->CalculateDeltaTime();
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window.get());
         glfwPollEvents();
     }
 
-    //Terminate GLFW
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    
 }
 
 void engine::UpdateScene()
@@ -54,13 +49,13 @@ void engine::UpdateScene()
     glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (size_t i = 0; i < currentScene.gameObjects.size(); i++)
+    for (size_t i = 0; i < currentScene->gameObjects.size(); i++)
     {
-        currentScene.gameObjects[i]->UpdateComponents();
+        currentScene->gameObjects[i]->UpdateComponents();
     }
 }
 
-GLFWwindow* engine::CreateWindow(int screenWidth, int screenHeight, std::string windowName)
+std::shared_ptr<GLFWwindow> engine::CreateWindow(int screenWidth, int screenHeight, std::string windowName)
 {
     //Window Setup
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -68,6 +63,7 @@ GLFWwindow* engine::CreateWindow(int screenWidth, int screenHeight, std::string 
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, windowName.c_str(), NULL, NULL);
+    
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -91,7 +87,8 @@ GLFWwindow* engine::CreateWindow(int screenWidth, int screenHeight, std::string 
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glEnable(GL_DEPTH_TEST);
 
-        return window;
+        std::shared_ptr<GLFWwindow> shrd_window(window, GLFWWindowDeleter());
+        return shrd_window;
     }
 }
 

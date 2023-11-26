@@ -13,7 +13,6 @@ class Scene
 public:
     Scene();
     void UpdateScene();
-    
 
     GameObject* camera;
     std::vector<GameObject*> gameObjects;

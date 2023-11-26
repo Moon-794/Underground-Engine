@@ -17,7 +17,7 @@ class GameObject
 
 public:
     //Use this for root level objects
-    GameObject(Scene* scene, std::string name = std::string("GameObject"));
+    GameObject(std::shared_ptr<Scene>& scene, std::string name = std::string("GameObject"));
     //Use this for non-root objects
     GameObject(GameObject* parent, std::string name = std::string("GameObject"));
 
@@ -57,9 +57,10 @@ public:
 
     void SetParent(GameObject* newParent);
     std::vector<GameObject*> childObjects;
-    
+
+    std::shared_ptr<Scene> gameScene;
+
 private:
-    Scene* gameScene;
     GameObject* parent = nullptr;
     
 };

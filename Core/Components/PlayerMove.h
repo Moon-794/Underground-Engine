@@ -7,10 +7,10 @@
 class PlayerMove : public Component
 {
 public: 
-    PlayerMove(GLFWwindow* window, UE::GameTime& time)
+    PlayerMove(std::shared_ptr<GLFWwindow> window, std::shared_ptr<UE::GameTime> time)
     {
-        this.window = window;
-        this.time = time;
+        this->window = window;
+        this->time = time;
     }
 
     std::string GetName() override
@@ -25,8 +25,8 @@ public:
     };
 
 private:
-    GLFWwindow* window;
-    UE::GameTime& time;
+    std::shared_ptr<GLFWwindow> window;
+    std::shared_ptr<UE::GameTime> time;
     glm::vec3 normalDirection;
 
     void ProcessMovement()
@@ -34,20 +34,20 @@ private:
         const float cameraSpeed = 5;
         glm::vec3 moveDir = glm::vec3(0.0f);
 
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        if (glfwGetKey(window.get(), GLFW_KEY_W) == GLFW_PRESS)
             moveDir += normalDirection;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        if (glfwGetKey(window.get(), GLFW_KEY_S) == GLFW_PRESS)
             moveDir -= normalDirection;
 
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        if (glfwGetKey(window.get(), GLFW_KEY_A) == GLFW_PRESS)
             moveDir -= glm::cross(normalDirection, glm::vec3(0.0, 1.0, 0.0));
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        if (glfwGetKey(window.get(), GLFW_KEY_D) == GLFW_PRESS)
             moveDir += glm::cross(normalDirection, glm::vec3(0.0, 1.0, 0.0));
 
         if(glm::length(moveDir) > 1.0f)
             moveDir = glm::normalize(moveDir);
     
-        gameObject->position += moveDir * cameraSpeed * time.GetDeltaTime();
+        gameObject->position += moveDir * cameraSpeed * time.get()->GetDeltaTime();
 
     };
 
@@ -59,7 +59,7 @@ private:
     void ProcessCamera()
     {
         GLdouble xPos, yPos;
-        glfwGetCursorPos(window, &xPos, &yPos);
+        glfwGetCursorPos(window.get(), &xPos, &yPos);
 
         float xoffset = xPos - lastX;
         float yoffset = lastY - yPos;
