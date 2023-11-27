@@ -26,6 +26,7 @@ public:
 
     void Init(int width, int height);
     void Tick();
+    void Render();
     void UpdateScene();
 
 private:

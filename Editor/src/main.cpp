@@ -35,14 +35,20 @@
 
 #include <iostream>
 #include "engine.h"
+#include "Editor/UI/imgui.h"
+#include "Editor/UI/imgui_impl_glfw.h"
+#include "Editor/UI/imgui_impl_opengl3.h"
 #include "ProjectLoader.h"
+
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
 
 int main()
 {
     std::cout << "Underground Editor - VA_2" << "\n";
 
     engine ue;
-    ue.Init(1280, 720);
+    ue.Init(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     GameObject* camera = new GameObject(ue.currentScene);
     GameObject* level = new GameObject(ue.currentScene, "Level");
@@ -56,20 +62,52 @@ int main()
     
     level->addComponent<MeshRenderer>(map.meshes[0], mapShader);
 
+    //IMGUI
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(ue.window.get(), true);
+    ImGui_ImplOpenGL3_Init("#version 460");
+
     while (!glfwWindowShouldClose(ue.window.get()))
     {
         ue.Tick();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::BeginMainMenuBar();
+        ImGui::EndMainMenuBar();
+
+        ImGui::SetNextWindowBgAlpha(1.0f);
+
+        ImGui::Begin("Underground Editor");
+        ImGui::Text("Hello");
+        ImGui::End();
+
+        ImGui::SetNextWindowBgAlpha(1.0f);
+        
+        ImGui::Begin("Heirarchy");
+        ImGui::Text("Hello");
+        ImGui::End();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        ue.Render();
     }
+
+    //deallocate dear-imgui
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     //Terminate GLFW
     glfwDestroyWindow(ue.window.get());
-    glfwTerminate(); 
+    glfwTerminate();
 
     return 0;
 }
-
-class UIManager
-{
-    //Use Imgui docking potentially.
-    //Excited!
-};

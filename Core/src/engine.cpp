@@ -31,16 +31,14 @@ void engine::Init(int width, int height)
 
 void engine::Tick()
 {
-    while(!glfwWindowShouldClose(window.get()))
-    {
-        UpdateScene();
-        gameTime->CalculateDeltaTime();
+    UpdateScene();
+    gameTime->CalculateDeltaTime();
+}
 
-        glfwSwapBuffers(window.get());
-        glfwPollEvents();
-    }
-
-    
+void engine::Render()
+{
+    glfwSwapBuffers(window.get());
+    glfwPollEvents();
 }
 
 void engine::UpdateScene()
@@ -84,7 +82,7 @@ std::shared_ptr<GLFWwindow> engine::CreateWindow(int screenWidth, int screenHeig
         }
 
         glViewport(0, 0, screenWidth, screenHeight);
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         glEnable(GL_DEPTH_TEST);
 
         std::shared_ptr<GLFWwindow> shrd_window(window, GLFWWindowDeleter());
