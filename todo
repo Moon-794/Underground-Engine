@@ -1,0 +1,4 @@
+#Todo List
+
+# Develop engines interfaces such that the time and window dependacies in playermove.h go away
+# Aka protect the actual pointers with a wrapper class and stuff

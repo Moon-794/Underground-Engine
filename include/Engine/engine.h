@@ -14,11 +14,21 @@
 #include <typeinfo>
 #include <filesystem>
 
-const float SCREEN_WIDTH = 1280.0f;
-const float SCREEN_HEIGHT = 720.0f;
+class engine
+{
+public:
+    int windowWidth;
+    int windowHeight;
+    
+    std::shared_ptr<GLFWwindow> window;
+    std::shared_ptr<Scene> currentScene;
+    std::shared_ptr<UE::GameTime> gameTime;
 
-GLFWwindow* CreateWindow(int screenWidth, int screenHeight, std::string windowName);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void FPSCounter(float deltaTime, int& frameCount, float& timer);
-void UpdateScene(Scene* scene);
-void RunEngine();
+    void Init(int width, int height);
+    void Tick();
+    void Render();
+    void UpdateScene();
+
+private:
+    std::shared_ptr<GLFWwindow> CreateWindow(int screenWidth, int screenHeight, std::string windowName);
+};

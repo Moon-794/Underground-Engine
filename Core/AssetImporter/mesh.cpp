@@ -3,6 +3,11 @@
 #include <../glad/glad.h>
 #include <Engine/GLFW/glfw3.h>
 
+Mesh::Mesh()
+{
+    //Woowoo
+}
+
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
 {
     this->vertices = vertices;

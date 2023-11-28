@@ -1,12 +1,13 @@
 #include "GameObject.h"
 
-GameObject::GameObject(Scene* scene, std::string name) : gameScene(scene)
+GameObject::GameObject(std::shared_ptr<Scene>& scene, std::string name)
 {
     this->name = name;
-    scene->gameObjects.push_back(this);
+    this->gameScene = scene;
+    this->gameScene->gameObjects.push_back(this);
 }
 
-GameObject::GameObject(GameObject* parent, std::string name)
+GameObject::GameObject(GameObject* parent, std::string name) : gameScene(parent->gameScene)
 {
     this->name = name;
     parent->childObjects.push_back(this);
