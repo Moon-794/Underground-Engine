@@ -35,10 +35,13 @@
 
 #include <iostream>
 #include "engine.h"
+<<<<<<< HEAD
 #include "Editor/UI/imgui.h"
 #include "Editor/UI/imgui_impl_glfw.h"
 #include "Editor/UI/imgui_impl_opengl3.h"
 #include "ProjectLoader.h"
+=======
+>>>>>>> main
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -46,6 +49,7 @@ const int SCREEN_HEIGHT = 720;
 int main()
 {
     std::cout << "Underground Editor - VA_2" << "\n";
+<<<<<<< HEAD
 
     engine ue;
     ue.Init(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -109,5 +113,8 @@ int main()
     glfwDestroyWindow(ue.window.get());
     glfwTerminate();
 
+=======
+    RunEngine();
+>>>>>>> main
     return 0;
 }
