@@ -35,13 +35,10 @@
 
 #include <iostream>
 #include "engine.h"
-<<<<<<< HEAD
 #include "Editor/UI/imgui.h"
 #include "Editor/UI/imgui_impl_glfw.h"
 #include "Editor/UI/imgui_impl_opengl3.h"
 #include "ProjectLoader.h"
-=======
->>>>>>> main
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -49,7 +46,6 @@ const int SCREEN_HEIGHT = 720;
 int main()
 {
     std::cout << "Underground Editor - VA_2" << "\n";
-<<<<<<< HEAD
 
     engine ue;
     ue.Init(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -75,32 +71,70 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(ue.window.get(), true);
     ImGui_ImplOpenGL3_Init("#version 460");
 
+    unsigned int FBO;
+    glGenFramebuffers(1, &FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 720);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     while (!glfwWindowShouldClose(ue.window.get()))
     {
+        glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+        glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         ue.Tick();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::BeginMainMenuBar();
-        ImGui::EndMainMenuBar();
-
         ImGui::SetNextWindowBgAlpha(1.0f);
-
-        ImGui::Begin("Underground Editor");
-        ImGui::Text("Hello");
+        if(ImGui::Begin("Window #1"))
+        {
+            ImGui::Text("Hello");
+        }
         ImGui::End();
 
         ImGui::SetNextWindowBgAlpha(1.0f);
-        
-        ImGui::Begin("Heirarchy");
-        ImGui::Text("Hello");
+        if(ImGui::Begin("Window #2"))
+        {
+            ImGui::Text("Hello");
+        }
+        ImGui::End();
+
+        ImGui::SetNextWindowBgAlpha(1.0f);
+        if(ImGui::Begin("Window #3"))
+        {
+            ImGui::Image((ImTextureID)(intptr_t)texture, ImVec2(1280, 720), ImVec2(0, 1), ImVec2(1, 0));
+        }
         ImGui::End();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         ue.Render();
     }
 
@@ -113,8 +147,5 @@ int main()
     glfwDestroyWindow(ue.window.get());
     glfwTerminate();
 
-=======
-    RunEngine();
->>>>>>> main
     return 0;
 }
