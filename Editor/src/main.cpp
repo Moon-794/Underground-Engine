@@ -71,6 +71,9 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(ue.window.get(), true);
     ImGui_ImplOpenGL3_Init("#version 460");
 
+    ImGuiStyle style = ImGui::GetStyle();
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
     unsigned int FBO;
     glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -96,7 +99,7 @@ int main()
         std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+    ImVec2 imageSize;
     while (!glfwWindowShouldClose(ue.window.get()))
     {
         glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
@@ -111,6 +114,7 @@ int main()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
 
         ImGui::SetNextWindowBgAlpha(1.0f);
         if(ImGui::Begin("Window #1"))
@@ -129,7 +133,39 @@ int main()
         ImGui::SetNextWindowBgAlpha(1.0f);
         if(ImGui::Begin("Window #3"))
         {
-            ImGui::Image((ImTextureID)(intptr_t)texture, ImVec2(1280, 720), ImVec2(0, 1), ImVec2(1, 0));
+            float gameWindowWidth = 1280;
+            float gameWindowHeight = 720;
+
+            float aspectRatio = gameWindowWidth / gameWindowHeight;
+
+            //Image will match smallest frame dim, then scale the other size to accomadate
+            float frameHeight = ImGui::GetWindowHeight();
+            float frameWidth = ImGui::GetWindowWidth();
+
+            if(frameHeight < frameWidth)
+            {
+                imageSize.x = frameHeight * aspectRatio;
+                imageSize.y = frameHeight;
+            }
+            else
+            {
+                imageSize.x = frameWidth;
+                imageSize.y = frameWidth * (1/aspectRatio);
+            }
+
+            if(frameWidth < imageSize.x)
+            {
+                imageSize.x = frameWidth;
+                imageSize.y = frameWidth * (1/aspectRatio);
+            }
+            
+            if(frameHeight < imageSize.y)
+            {
+                imageSize.y = frameHeight;
+                imageSize.x = frameHeight * aspectRatio;
+            }
+
+            ImGui::Image((ImTextureID)(intptr_t)texture, imageSize, ImVec2(0, 1), ImVec2(1, 0));
         }
         ImGui::End();
 
