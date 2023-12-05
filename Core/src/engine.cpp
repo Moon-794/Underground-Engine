@@ -43,10 +43,6 @@ void engine::Render()
 
 void engine::UpdateScene()
 {
-    //GLFW Boilerplate
-    glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     for (size_t i = 0; i < currentScene->gameObjects.size(); i++)
     {
         currentScene->gameObjects[i]->UpdateComponents();

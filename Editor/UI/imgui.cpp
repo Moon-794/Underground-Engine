@@ -3225,6 +3225,8 @@ const ImGuiDataVarInfo* ImGui::GetStyleVarInfo(ImGuiStyleVar idx)
     return &GStyleVarInfo[idx];
 }
 
+#include <iostream>
+
 void ImGui::PushStyleVar(ImGuiStyleVar idx, float val)
 {
     ImGuiContext& g = *GImGui;

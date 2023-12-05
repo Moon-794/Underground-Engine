@@ -35,13 +35,10 @@
 
 #include <iostream>
 #include "engine.h"
-<<<<<<< HEAD
 #include "Editor/UI/imgui.h"
 #include "Editor/UI/imgui_impl_glfw.h"
 #include "Editor/UI/imgui_impl_opengl3.h"
 #include "ProjectLoader.h"
-=======
->>>>>>> main
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -49,7 +46,6 @@ const int SCREEN_HEIGHT = 720;
 int main()
 {
     std::cout << "Underground Editor - VA_2" << "\n";
-<<<<<<< HEAD
 
     engine ue;
     ue.Init(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -58,7 +54,7 @@ int main()
     GameObject* level = new GameObject(ue.currentScene, "Level");
 
     ue.currentScene->camera = camera;
-    ue.currentScene->camera->addComponent<PlayerMove>(ue.window, ue.gameTime);
+    //ue.currentScene->camera->addComponent<PlayerMove>(ue.window, ue.gameTime);
     ue.currentScene->camera->position = glm::vec3(0.0, -2.0, 0.0);
     
     Shader* mapShader = new Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
@@ -75,32 +71,107 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(ue.window.get(), true);
     ImGui_ImplOpenGL3_Init("#version 460");
 
+    ImGuiStyle style = ImGui::GetStyle();
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
+    unsigned int FBO;
+    glGenFramebuffers(1, &FBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 720);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    ImVec2 imageSize;
+
     while (!glfwWindowShouldClose(ue.window.get()))
     {
+        glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+        glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         ue.Tick();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        ImGui::BeginMainMenuBar();
-        ImGui::EndMainMenuBar();
-
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    
         ImGui::SetNextWindowBgAlpha(1.0f);
-
-        ImGui::Begin("Underground Editor");
-        ImGui::Text("Hello");
+        if(ImGui::Begin("Base"))
+        {
+            
+        }
+        ImGui::End();
+        ImGui::SetNextWindowBgAlpha(1.0f);
+        if(ImGui::Begin("Window #2"))
+        {
+            ImGui::Text("Hello");
+        }
         ImGui::End();
 
         ImGui::SetNextWindowBgAlpha(1.0f);
+        if(ImGui::Begin("Window #3"))
+        {
+            float gameWindowWidth = 1280;
+            float gameWindowHeight = 720;
+
+            float aspectRatio = gameWindowWidth / gameWindowHeight;
+
+            //Image will match smallest frame dim, then scale the other size to accomadate
+            float frameHeight = ImGui::GetWindowHeight();
+            float frameWidth = ImGui::GetWindowWidth();
+            std::cout << imageSize.y << ":" << frameHeight << "\n";
+            if(frameHeight < frameWidth)
+            {
+                imageSize.x = frameHeight * aspectRatio;
+                imageSize.y = frameHeight;
+            }
+    
+            if(frameWidth < frameHeight)
+            {
+                imageSize.x = frameWidth;
+                imageSize.y = frameWidth * (1/aspectRatio);
+            }
+
+            if(frameWidth < imageSize.x)
+            {
+                imageSize.x = frameWidth;
+                imageSize.y = frameWidth * (1/aspectRatio);
+            }
+            
+            if(frameHeight < imageSize.y)
+            {
+                imageSize.y = frameHeight;
+                imageSize.x = frameHeight * aspectRatio;
+            }
+
+            ImGui::Image((ImTextureID)(intptr_t)texture, imageSize, ImVec2(0, 1), ImVec2(1, 0));
+        }
         
-        ImGui::Begin("Heirarchy");
-        ImGui::Text("Hello");
         ImGui::End();
-
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         ue.Render();
     }
 
@@ -113,8 +184,5 @@ int main()
     glfwDestroyWindow(ue.window.get());
     glfwTerminate();
 
-=======
-    RunEngine();
->>>>>>> main
     return 0;
 }
