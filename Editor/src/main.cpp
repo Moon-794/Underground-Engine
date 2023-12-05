@@ -54,7 +54,7 @@ int main()
     GameObject* level = new GameObject(ue.currentScene, "Level");
 
     ue.currentScene->camera = camera;
-    ue.currentScene->camera->addComponent<PlayerMove>(ue.window, ue.gameTime);
+    //ue.currentScene->camera->addComponent<PlayerMove>(ue.window, ue.gameTime);
     ue.currentScene->camera->position = glm::vec3(0.0, -2.0, 0.0);
     
     Shader* mapShader = new Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
@@ -100,6 +100,7 @@ int main()
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     ImVec2 imageSize;
+
     while (!glfwWindowShouldClose(ue.window.get()))
     {
         glClearColor(0.12f, 0.16f, 0.26f, 1.0f);
@@ -114,15 +115,14 @@ int main()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    
         ImGui::SetNextWindowBgAlpha(1.0f);
-        if(ImGui::Begin("Window #1"))
+        if(ImGui::Begin("Base"))
         {
-            ImGui::Text("Hello");
+            
         }
         ImGui::End();
-
         ImGui::SetNextWindowBgAlpha(1.0f);
         if(ImGui::Begin("Window #2"))
         {
@@ -141,13 +141,14 @@ int main()
             //Image will match smallest frame dim, then scale the other size to accomadate
             float frameHeight = ImGui::GetWindowHeight();
             float frameWidth = ImGui::GetWindowWidth();
-
+            std::cout << imageSize.y << ":" << frameHeight << "\n";
             if(frameHeight < frameWidth)
             {
                 imageSize.x = frameHeight * aspectRatio;
                 imageSize.y = frameHeight;
             }
-            else
+    
+            if(frameWidth < frameHeight)
             {
                 imageSize.x = frameWidth;
                 imageSize.y = frameWidth * (1/aspectRatio);
@@ -167,8 +168,8 @@ int main()
 
             ImGui::Image((ImTextureID)(intptr_t)texture, imageSize, ImVec2(0, 1), ImVec2(1, 0));
         }
+        
         ImGui::End();
-
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         ue.Render();
