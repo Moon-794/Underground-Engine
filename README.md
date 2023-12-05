@@ -1,3 +1,3 @@
 # The-Underground
 
-3D Voxel based game about exploration, combat and base building!
+A first attempt for a 3D game engine, code includes the core of the engine and an editor application for building games easier.
