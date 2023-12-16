@@ -22,7 +22,7 @@
     //--Player Defined Folders-- (e.g saves, mods etc)
 
 //Will probably change later but good enough for now.
-///NOTE: i really dont care if people have the art assets, so probably just obfuscate the scripts to deter people
+//NOTE: i really dont care if people have the art assets, so probably just obfuscate the scripts to deter people
 //idk really more of late stage design choice
 //
 //Ok so, the primary purpose of the editor is to provide a set of tools to allow the developer to construct
@@ -38,7 +38,6 @@
 #include "Editor/UI/imgui.h"
 #include "Editor/UI/imgui_impl_glfw.h"
 #include "Editor/UI/imgui_impl_opengl3.h"
-#include "ProjectLoader.h"
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -54,11 +53,11 @@ int main()
     GameObject* level = new GameObject(ue.currentScene, "Level");
 
     ue.currentScene->camera = camera;
-    //ue.currentScene->camera->addComponent<PlayerMove>(ue.window, ue.gameTime);
+    ue.currentScene->camera->addComponent<PlayerMove>(ue.window, ue.gameTime);
     ue.currentScene->camera->position = glm::vec3(0.0, -2.0, 0.0);
     
     Shader* mapShader = new Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
-    Model map = Model("Models/map.obj");
+    Model map = Model("Models/Map.obj");
     
     level->addComponent<MeshRenderer>(map.meshes[0], mapShader);
 
@@ -120,7 +119,7 @@ int main()
         ImGui::SetNextWindowBgAlpha(1.0f);
         if(ImGui::Begin("Base"))
         {
-            
+	std::cout<< "HELLO" << "\n";		
         }
         ImGui::End();
         ImGui::SetNextWindowBgAlpha(1.0f);
@@ -130,11 +129,15 @@ int main()
         }
         ImGui::End();
 
+	
         ImGui::SetNextWindowBgAlpha(1.0f);
         if(ImGui::Begin("Window #3"))
         {
             float gameWindowWidth = 1280;
             float gameWindowHeight = 720;
+
+	        float windowX = 0;
+	        float windowY = 0;
 
             float aspectRatio = gameWindowWidth / gameWindowHeight;
 
@@ -152,13 +155,21 @@ int main()
             {
                 imageSize.x = frameWidth;
                 imageSize.y = frameWidth * (1/aspectRatio);
+
+	        	windowY = (frameHeight - imageSize.y) / 2;
             }
 
             if(frameWidth < imageSize.x)
             {
                 imageSize.x = frameWidth;
                 imageSize.y = frameWidth * (1/aspectRatio);
+		
+		windowY = (frameHeight - imageSize.y) / 2;
             }
+	    else
+	    {
+		windowX = (frameWidth - imageSize.x) / 2;
+	    }
             
             if(frameHeight < imageSize.y)
             {
@@ -166,12 +177,14 @@ int main()
                 imageSize.x = frameHeight * aspectRatio;
             }
 
-            ImGui::Image((ImTextureID)(intptr_t)texture, imageSize, ImVec2(0, 1), ImVec2(1, 0));
+	    ImGui::SetCursorPos(ImVec2(windowX, windowY));
+	    ImGui::Image((ImTextureID)(intptr_t)texture, imageSize, ImVec2(0, 1), ImVec2(1, 0));
+	    ImGui::SetCursorPos(ImVec2(0, 0));
         }
         
         ImGui::End();
         ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         ue.Render();
     }
 

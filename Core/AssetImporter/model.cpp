@@ -2,7 +2,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
+#include <filesystem>
 std::vector<Texture> textures_loaded; 
 
 void Model::Draw(Shader &shader)
@@ -16,10 +16,12 @@ void Model::Draw(Shader &shader)
 void Model::loadModel(std::string path)
 {
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path, aiProcess_GenSmoothNormals | aiProcess_Triangulate);
+    const aiScene *scene = import.ReadFile("./" + path, aiProcess_Triangulate);
 
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
+	std::cout << std::filesystem::current_path() << "\n";
+	std::cout << path << "\n";
         std::cout << "Error (ASSIMP) - " << import.GetErrorString() << std::endl;
         return;
     }
