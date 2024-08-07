@@ -25,8 +25,10 @@ public:
     std::shared_ptr<UE::GameTime> gameTime;
 
     void Init(int width, int height);
+
     void Tick();
     void Render();
+
     void UpdateScene();
 
 private:

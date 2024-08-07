@@ -1,6 +1,7 @@
 #include "engine.h"
 
 typedef struct GLFWwindow GLFWwindow;
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 struct GLFWWindowDeleter
 {
@@ -81,8 +82,17 @@ std::shared_ptr<GLFWwindow> engine::CreateWindow(int screenWidth, int screenHeig
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         glEnable(GL_DEPTH_TEST);
 
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
         std::shared_ptr<GLFWwindow> shrd_window(window, GLFWWindowDeleter());
         return shrd_window;
     }
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
 }
 
