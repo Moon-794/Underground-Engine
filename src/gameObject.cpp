@@ -5,12 +5,16 @@ GameObject::GameObject(std::shared_ptr<Scene>& scene, std::string name)
     this->name = name;
     this->gameScene = scene;
     this->gameScene->gameObjects.push_back(this);
+
+    position = glm::vec3(0);
 }
 
 GameObject::GameObject(GameObject* parent, std::string name) : gameScene(parent->gameScene)
 {
     this->name = name;
     parent->childObjects.push_back(this);
+
+    position = glm::vec3(0);
 }
 
 void GameObject::SetParent(GameObject* newParent)

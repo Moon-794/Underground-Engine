@@ -3,7 +3,7 @@ project(UndergroundEngine)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin/)
 
-add_executable(UndergroundEngine src/main.cpp
+add_library(UndergroundEngine src/main.cpp
 src/engine.cpp src/glad.c src/gametime.cpp src/gameObject.cpp
 src/component.cpp src/scene.cpp src/scene.cpp src/mesh.cpp src/model.cpp)
 

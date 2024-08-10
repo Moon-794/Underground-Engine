@@ -22,7 +22,9 @@ public:
     void Update() override
     {
         shader->use();
+
         glm::mat4 model(1.0f);
+        model = glm::translate(model, gameObject->position);
         shader->setMat4("model", model);
 
         glm::mat4 view(1.0f);
