@@ -1,5 +1,5 @@
-#ifndef COMPONENT
-#define COMPONENT
+#ifndef UE_COMPONENT
+#define UE_COMPONENT
 
 #include <iostream>
 #include <memory>

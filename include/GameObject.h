@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <glm/gtc/quaternion.hpp>
 
 //Forward declare scene
 class Scene;
@@ -28,6 +29,7 @@ public:
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 scale;
+    glm::quat quatRot;
 
     //Template for adding components, returns a pointer
     template<typename T, typename... Args>
