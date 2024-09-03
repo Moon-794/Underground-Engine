@@ -11,7 +11,7 @@ int main(int argc, char** args)
 
     e.currentScene->camera = camera;
     e.currentScene->camera->addComponent<PlayerMove>(e.window, e.gameTime);
-    e.currentScene->camera->position = glm::vec3(0.0, -2.0, 0.0);
+    e.currentScene->camera->position = glm::vec3(0.0, -4.0, 0.0);
     
     Shader* mapShader = new Shader("Shaders/Basic/vertex.vs", "Shaders/Basic/fragment.fs");
     Model map = Model("Models/Map/map.obj");

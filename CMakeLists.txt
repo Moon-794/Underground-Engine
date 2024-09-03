@@ -3,7 +3,7 @@ project(UndergroundEngine)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin/)
 
-set(SRC_FILES src/main.cpp src/glad.c
+set(SRC_FILES src/glad.c
 src/engine.cpp src/gametime.cpp src/gameObject.cpp
 src/component.cpp src/scene.cpp src/scene.cpp src/mesh.cpp src/model.cpp)
 
@@ -12,7 +12,7 @@ option(BUILD_LIBRARY "Build a static library of the engine" OFF)
 if(BUILD_LIBRARY)
     add_library(UndergroundEngine ${SRC_FILES})
 else()
-    add_executable(UndergroundEngine ${SRC_FILES})
+    add_executable(UndergroundEngine src/main.cpp ${SRC_FILES})
 endif()
 
 target_include_directories(UndergroundEngine PRIVATE ${CMAKE_SOURCE_DIR}/include $ENV{VCPKG_ROOT}/installed/x64-windows/include)

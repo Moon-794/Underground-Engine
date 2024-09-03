@@ -82,6 +82,9 @@ std::shared_ptr<GLFWwindow> engine::CreateWindow(int screenWidth, int screenHeig
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         glEnable(GL_DEPTH_TEST);
 
+        glfwSetWindowUserPointer(window, &currentScene);
+        std::cout << &currentScene;
+
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
         std::shared_ptr<GLFWwindow> shrd_window(window, GLFWWindowDeleter());
@@ -91,8 +94,13 @@ std::shared_ptr<GLFWwindow> engine::CreateWindow(int screenWidth, int screenHeig
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+
+    std::shared_ptr<Scene> scene = *static_cast<std::shared_ptr<Scene>*>(glfwGetWindowUserPointer(window));
+
+    if(scene)
+        scene->UpdateProjectionMatrix(width, height);
+    else
+        std::cout << "Scene not found!\n";
 }
 

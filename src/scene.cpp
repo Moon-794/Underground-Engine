@@ -5,6 +5,11 @@ Scene::Scene()
     projection = glm::perspective(glm::radians(90.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
 }
 
+void Scene::UpdateProjectionMatrix(float newWidth, float newHeight)
+{
+    projection = glm::perspective(glm::radians(90.0f), newWidth / newHeight, 0.1f, 100.0f);
+}
+
 void Scene::UpdateScene()
 {
     for (size_t i = 0; i < gameObjects.size(); i++)

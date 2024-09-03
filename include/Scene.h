@@ -13,6 +13,8 @@ class Scene
 public:
     Scene();
     void UpdateScene();
+    void UpdateProjectionMatrix(float newWidth, float newHeight);
+
 
     GameObject* camera;
     std::vector<GameObject*> gameObjects;
