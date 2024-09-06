@@ -12,4 +12,5 @@ _deps
 build/*
 build/bin/Editor/*.exe
 !build/bin/
+!build/build.bat
 .vscode

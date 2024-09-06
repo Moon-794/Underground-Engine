@@ -17,25 +17,21 @@ class GameObject
 {
 
 public:
-    //Use this for root level objects
-    GameObject(std::shared_ptr<Scene>& scene, std::string name = std::string("GameObject"));
-    //Use this for non-root objects
-    GameObject(GameObject* parent, std::string name = std::string("GameObject"));
+    GameObject(Scene& scene);
 
     std::string name;
     std::vector<std::shared_ptr<Component>> components;
 
     //Transformation properties
-    glm::vec3 position;
-    glm::vec3 rotation;
-    glm::vec3 scale;
-    glm::quat quatRot;
+    glm::vec3 position = glm::vec3(0);
+    glm::vec3 rotation = glm::vec3(0);
+    glm::vec3 scale = glm::vec3(1);
 
     //Template for adding components, returns a pointer
     template<typename T, typename... Args>
-    std::unique_ptr<T> addComponent(Args&&... args)
+    std::shared_ptr<T> addComponent(Args&&... args)
     {
-        std::unique_ptr<T> component = std::make_unique<T>(std::forward<Args>(args)...);
+        std::shared_ptr<T> component = std::make_unique<T>(std::forward<Args>(args)...);
         component->gameObject = this;
         components.push_back(std::move(component));
         return component;
@@ -48,23 +44,9 @@ public:
         {
             components[i]->Update();
         }
-
-        //Repeat recursively for all child objects
-        for (size_t i = 0; i < childObjects.size(); i++)
-        {
-            childObjects[i]->UpdateComponents();
-        }
-        
     };
 
-    void SetParent(GameObject* newParent);
-    std::vector<GameObject*> childObjects;
-
-    std::shared_ptr<Scene> gameScene;
-
-private:
-    GameObject* parent = nullptr;
-    
+    Scene& gameScene;
 };
 
 #include "Scene.h"

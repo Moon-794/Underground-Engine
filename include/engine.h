@@ -14,7 +14,7 @@
 #include <typeinfo>
 #include <filesystem>
 
-class engine
+class Engine
 {
 public:
     int windowWidth;

@@ -25,17 +25,16 @@ public:
 
         glm::mat4 model(1.0f);
 
-
         model = glm::translate(model, gameObject->position);
         model = glm::rotate(model, gameObject->rotation.x, glm::vec3(0, 1, 0));
         model = glm::scale(model, gameObject->scale);
         shader->setMat4("model", model);
 
         glm::mat4 view(1.0f);
-        view = gameObject->gameScene->GetView();
+        view = gameObject->gameScene.GetView();
         shader->setMat4("view", view);
 
-        shader->setMat4("projection", gameObject->gameScene->projection);
+        shader->setMat4("projection", gameObject->gameScene.projection);
 
         mesh.Draw(*shader);
     }

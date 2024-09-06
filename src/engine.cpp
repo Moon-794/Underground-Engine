@@ -12,7 +12,7 @@ struct GLFWWindowDeleter
     }
 };
 
-void engine::Init(int width, int height)
+void Engine::Init(int width, int height)
 {
     this->windowWidth = width;
     this->windowHeight = height;
@@ -30,19 +30,19 @@ void engine::Init(int width, int height)
     }
 }
 
-void engine::Tick()
+void Engine::Tick()
 {
     UpdateScene();
     gameTime->CalculateDeltaTime();
 }
 
-void engine::Render()
+void Engine::Render()
 {
     glfwSwapBuffers(window.get());
     glfwPollEvents();
 }
 
-void engine::UpdateScene()
+void Engine::UpdateScene()
 {
     for (size_t i = 0; i < currentScene->gameObjects.size(); i++)
     {
@@ -50,7 +50,7 @@ void engine::UpdateScene()
     }
 }
 
-std::shared_ptr<GLFWwindow> engine::CreateWindow(int screenWidth, int screenHeight, std::string windowName)
+std::shared_ptr<GLFWwindow> Engine::CreateWindow(int screenWidth, int screenHeight, std::string windowName)
 {
     //Window Setup
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

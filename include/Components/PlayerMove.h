@@ -53,12 +53,13 @@ private:
 
     float pitch = 0.0f;
     float yaw = 0.0f;
-    float lastX;
-    float lastY;
+    float lastX = 0.0f;
+    float lastY = 0.0f;
 
     void ProcessCamera()
     {
-        GLdouble xPos, yPos;
+        GLdouble xPos = 0.0f;
+        GLdouble yPos = 0.0f;
         glfwGetCursorPos(window.get(), &xPos, &yPos);
 
         float xoffset = xPos - lastX;
